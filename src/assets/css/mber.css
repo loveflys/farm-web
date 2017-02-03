@@ -1,0 +1,135 @@
+    .sq{
+      background-color: #FBF9FE;
+      overflow: hidden;
+    }
+    .top{
+      width:100%;
+      height:20vh;
+      margin-top:1vh;
+      border:1px solid #F6F4F7;
+      background-color:white;
+      overflow: hidden;
+    }
+    .topleft{
+      height:11vh;
+      width:11vh;
+      margin:4vh 10vw;
+      border-radius:5vh;
+      float:left;
+      overflow: hidden;
+    }
+    .topleft img{
+      width:100%;
+      height:100%;
+    }
+    .toprighttop{
+      border:1px solid #88D4FB;
+      float:right;
+      padding:0.5vh 2vw;
+      margin:2.5vh 5vw;
+    }
+    .toprightbottom{
+      float:right;
+      padding:1vh 2vw;
+      margin:2.5vh 5vw;
+    }
+    .top .talk{
+      margin:1vh 3vw;
+    }
+    .top p{
+      padding:0 5vw;
+      font-weight: normal;
+    }
+    .sq p{
+      color:#A39F9B;
+    }
+    .middle,.bottom{
+      margin-top: 1vh;
+      width:100%;
+      height:26vh;
+      background-color:white;
+      border:1px solid #F6F4F7;
+
+    }
+    .middle{
+
+    }
+    .bottom{
+    }
+    .middlelefttop{
+      width:80%;
+      height:85%;
+      margin:2vh 5vw;
+      background: url("../images/img/qd.png") no-repeat;
+      background-size: 10vh;
+      background-position-x: right;
+      background-position-y: bottom;
+    }
+    .right{
+      float:right;
+      margin-right:2vw;
+      font-size: 2vh;
+    }
+    .middleleft{
+      width:49vw;
+      height:100%;
+      border-right:1vw solid #F6F4F7;
+      overflow: hidden;
+      float:left;
+    }
+    .middlerighttop{
+      float:left;
+      width:49%;
+      height:49%;
+      border-bottom:1vw solid #F6F4F7;
+    }
+    .middlerightbottom{
+      float:left;
+      width:49%;
+      height:49%;
+    }
+    .middlerighttopleft,.middlerightbottomleft{
+      background: url("../images/img/zl.png") center no-repeat;
+      background-size: 10vh;
+      width:50%;
+      height:100%;
+      float:left;
+    }
+    .middlerighttopright{
+      width:45%;
+      height:100%;
+      float:left;
+      padding:0.3vh 0.5vw;
+    }
+    .middlerighttopright p{
+      margin:1vh 0;
+      font-size: 2vh;
+      font-weight: normal;
+    }
+    .middlerightbottomleft{
+      background-image: url("../images/img/gg.png");
+      background-size: 7vh;
+    }
+    .bottom1,.bottom2,.bottom3,.bottom4{
+      float:left;
+      width:49%;
+      height:49%;
+    }
+    .bottom1,.bottom3{
+      border-right:1vw solid #F6F4F7;
+    }
+    .bottom1,.bottom2{
+      border-bottom:1vw solid #F6F4F7;
+    }
+    .bottom1 .middlerightbottomleft{
+      background-image: url("../images/img/cy.png");
+      background-size: 7vh;
+    }
+    .bottom2 .middlerightbottomleft{
+      background-image: url("../images/img/hd.png");
+      background-size: 7vh;
+    }
+    .bottom3 .middlerightbottomleft{
+      background-image: url("../images/img/jh.png");
+      background-size: 7vh;
+    }

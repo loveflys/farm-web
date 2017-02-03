@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>登录</title>
+  </head>
+  <body>
+    <div class="container">
+      <index></index>
+    </div>
+
+    <!-- fileUpload: function (e) {
+      if ($("#up_file")[0].files.length === 0) {
+        return false;
+      }
+      var _this = this;
+      this.$parent.$refs.toast.show('文件上传中...');
+      var upForm = new FormData();
+      upForm.append("myfile", $("#up_file")[0].files[0]);
+      $.ajax({
+        url: config.ENVELOPE_URL,
+        type: 'POST',
+        data: upForm,
+        processData: false,
+        contentType: false,
+        success: function (rs) {
+          if (rs.code === '0') {
+            _this.fileUrl = rs.url;
+            _this.deleteBtn = true;
+            _this.photoIds.push(_this.fileUrl);
+            if (_this.responseType === '2') {
+              $("#imageUrl").css("display", '');
+              $("#delete").css("display", '');
+              $(".weui_uploader_input_wrp").css("display", 'none');
+            } else {
+            }
+          } else {
+            alert('文件上传失败');
+            _this.fileUrl = '';
+          }
+          _this.$parent.$refs.toast.hide();
+        },
+        error: function () {
+          _this.fileUrl = '';
+          alert('文件上传失败');
+        }
+      });
+    }, -->
+
+  </body>
+</html>

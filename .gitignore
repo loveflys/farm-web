@@ -1,0 +1,5 @@
+*.sublime-project
+*.editorconfig
+node_modules/*
+dist
+dist/*

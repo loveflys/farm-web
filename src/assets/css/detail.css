@@ -1,0 +1,302 @@
+.weui_msg img{
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+}
+.weui_media_hd{
+	margin-right: 0.8em;
+	line-height: 60px;
+}
+.weui_media_bd .weui_media_title{
+	line-height: 26px;
+	font-size: 14px;
+	font-weight: 500;
+}
+.weui_tab{
+	height: 64px;
+}
+.font_white{
+	color: #ffffff;
+}
+.del_border:after{
+	border-right:none ;
+}
+.weui_border:before{
+	border-top: none;
+}
+.weui_media_box h4{
+	font-weight: 500;
+	overflow: hidden;
+}
+.weui_media_box h4 span{
+	display: block;
+}
+.weui_media_box h4 .name{
+	width: 7em;
+	float: left;
+}
+.weui_media_box h4 .val{
+	color: #aaaaaa;
+	font-weight: normal;
+	margin-left: 7em;
+	color: 12px;
+}
+.weui_absolute{
+	text-align: center;
+	width: 5em;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	top: 6px;
+	right: 2px;
+}
+.weui_absolute_r{
+	right: 12px;
+}
+.weui_top:before{
+	border-top: none;
+}
+.icon_absolute{
+	position: absolute;
+	top: 26px;
+	right: 3%;
+}
+.weui_absolute .weui_tabbar_icon{
+	float: left;
+}
+.weui_absolute p{
+	float: left;
+	height: 24px;
+	font-size: 14px;
+	margin-left: 6%;
+	margin-top: 1px;
+	line-height: 24px;
+}
+.weui_media_box .header{
+	text-align: center;
+	background: url(../images/line.gif) repeat-x center center;
+}
+.weui_media_box .header p{
+	text-align: center;
+	background: #ffffff;
+	width: 100px;
+	margin: 0 auto;
+	color: #666666;
+	line-height: 40px;
+}
+.weui_media_box .header_height{
+	margin: 10px 0;
+}
+.weui_label_b{
+	width: 5em;
+}
+.weui_media_desc_span span{
+	max-width: 5em;
+	text-align: center;
+	padding: 0 0.5em;
+	color: #323232;
+	display: inline-block;
+	line-height: 20px;
+	margin: 0.5em 0.5em 0 0;
+}
+.win_dqld_div{
+	width: 100%;
+	height: 1200px;
+	background: #ffffff;
+	position: absolute;
+	top: 0;
+	z-index: 1;
+}
+p.weui_tabbar_label span{
+	display: inline-block;
+	line-height: 20px;
+}
+.fs{
+	text-align: center;
+	width: 8em;
+	font-size: 14px;
+	color: #323232;
+	font-weight: 500;
+	margin-right: -0.8em;
+}
+.weui_toast_bottom{
+	position: absolute;
+    z-index: 3;
+    width: 4em;
+    min-height: 4em;
+    bottom: 20px;
+    left: 50%;
+    margin-left: -2em;
+    text-align: center;
+    border-radius: 5px;
+}
+.dqld_div {
+	width: 100%;
+	position: absolute;
+	top: 0;
+	background: #ffffff;
+	z-index: 2;
+}
+.dqld_div ul {
+	width: 90%;
+	list-style: none;
+	background: #ffffff;
+}
+.dqld_div ul li {
+	height: 35px;
+	line-height: 35px;
+	border-bottom: 1px solid #cccccc;
+	padding-left: 10px;
+	background: #ffffff;
+}
+.bb{
+	border-bottom: solid 1px #d9d9d9;
+}
+.l15{
+	left: 15px;
+}
+.pt10{
+	padding-top: 10px;
+}
+.pt20{
+	padding-top: 20px;
+}
+.pb0{
+	padding-bottom: 0;
+}
+.pb20{
+	padding-bottom: 20px;
+}
+.pl0{
+	padding-left: 0;
+}
+.pl10{
+	padding-left: 10px;
+}
+.pl20{
+	padding-left: 20px;
+}
+.pl30{
+	padding-left: 30px;
+}
+.pl40{
+	padding-left: 40px;
+}
+.pl50{
+	padding-left: 50px;
+}
+.mb0{
+	margin-top: 0;
+}
+.mb0:before{
+	border-top: none;
+}
+.mt20{
+	margin-top: 30px;
+}
+.text-right{
+	text-align: right;
+}
+.text-left{
+	text-align: left;
+}
+.text-center{
+	text-align: center;
+}
+.white{
+	background: #ffffff;
+}
+.gray{
+	background: #f0f0f0;
+}
+.blue{
+	background: blue;
+}
+.red{
+	background: red;
+}
+.pink{
+	background: pink;
+}
+.yellow{
+	background: yellow;
+}
+.green{
+	background: green;
+}
+.orange{
+	background: orange;
+}
+.purple{
+	background: purple;
+}
+.paleturquoise{
+	background: paleturquoise;
+}
+.plum{
+	background: plum;
+}
+.brown{
+	background: brown;
+}
+.purple{
+	background: blanchedalmond;
+}
+.gold{
+	background: gold;
+}
+.salmon{
+	background: salmon;
+}
+.aqua{
+	background: aqua;
+}
+.azure{
+	background: azure;
+}
+.skyblue{
+	background: skyblue;
+}
+.deepskyblue{
+	background: deepskyblue;
+}
+.seagreen{
+	background: seagreen;
+}
+.cornflowerblue{
+	background: cornflowerblue;
+}
+.must:after{
+    content:"\2731";
+  	font-style:normal;
+  	color:red;
+}
+#textareatitle{
+	margin:0;
+	padding:0;
+}
+#weui_cells_form{
+	margin-top: 0;
+}
+#noborder-top:before{
+	border:0;
+}
+#noborder-bottom{
+	border-bottom:0;
+}
+.noborder-after:after{
+	border-bottom:0;
+}
+.noborder-after:before{
+	border:0;
+}
+.weui_media_box.weui_media_text .weui_media_info.margin-top5{
+	margin-top:5px;
+}
+
+.weui_media_box.weui_media_appmsg.padding-bottom5{
+	padding-bottom:5px;
+}
+body{
+	background-color: #fbf9fe;
+}
