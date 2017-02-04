@@ -14,7 +14,8 @@
     "lint": "./node_modules/.bin/eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "jquery": "^2.2.2",
+    "jquery": "^2.2.3",
+    "bootstrap": "^3.3.7",
     "vue": "^1.0.28",
     "babel-runtime": "^6.9.2",
     "vue-touch": "^1.1.0",

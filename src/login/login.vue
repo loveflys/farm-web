@@ -21,24 +21,28 @@
     }
 </style>
 <template>
-    <Row style="margin-top:100px;" type="flex" justify="center" align="top">
-        <i-col span="20">
-          <i-form v-ref:form :model="form" :rules="ruleCustom" :label-width="80">
-              <Form-item label="账号" prop="username">
-                  <i-input type="text" :value.sync="form.username"></i-input>
-              </Form-item>
-              <Form-item label="密码" prop="passwd">
-                  <i-input type="password" :value.sync="form.passwd"></i-input>
-              </Form-item>
-              <Form-item>
-                  <i-button type="primary" @click="handleSubmit('form')">提交</i-button>
-                  <i-button type="ghost" @click="handleReset('form')" style="margin-left: 8px">重置</i-button>
-              </Form-item>
-          </i-form>
-        </i-col>
-    </Row>
+<div class="login-box">
+<div class="login-logo">
+  <a href="javascript:void(0);"><b>Chenanyi</b>System</a>
+</div>
+<div class="login-box-body">
+  <p class="login-box-msg">come on！傻狍子！</p>
+    <i-form v-ref:form :model="form" :rules="ruleCustom">
+      <Form-item prop="username">
+          <i-input type="text" :value.sync="form.username"></i-input>
+      </Form-item>
+      <Form-item prop="passwd">
+          <i-input type="password" :value.sync="form.passwd"></i-input>
+      </Form-item>
+      <Form-item>
+          <i-button long type="primary" @click="handleSubmit('form')">提交</i-button>
+          <i-button long type="ghost" @click="handleReset('form')">重置</i-button>
+      </Form-item>
 
-
+    </i-form>
+</div>
+</div>
+  
 </template>
 <script>
   import store from '../store/login.js';
@@ -139,6 +143,7 @@
             cookie.set("X-USERID",msg.userid);
             cookie.set("X-TOKEN",msg.token);
             this.$Message.success('登录成功!');
+            window.location.href="/home/index.html#!/"
           } else {
             this.$Message.error('登录失败!');
           }

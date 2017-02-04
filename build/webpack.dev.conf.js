@@ -34,6 +34,12 @@ module.exports = merge(baseWebpackConfig, {
       template: 'src/login/index.html',
       inject: true,
       chunks: ['login']
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'home/index.html',
+      template: 'src/home/index.html',
+      inject: true,
+      chunks: ['home']
     })
   ]
 });

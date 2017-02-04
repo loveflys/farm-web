@@ -4,8 +4,7 @@ import RouterConfig from './router-config';
 import Sortable from 'vue-sortable'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';    // 使用 CSS
-import '../assets/bootstrap/css/bootstrap.min.css';    // 使用 CSS
-import '../assets/css/css/AdminLTE.css';    // 使用 CSS
+
 
 Vue.use(Sortable)
 Vue.use(VueRouter);
