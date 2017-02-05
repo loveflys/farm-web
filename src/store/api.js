@@ -8,15 +8,16 @@ module.exports = {
     $.ajax({
       url: config.SERVER_URL + options.api,
       beforeSend: function(request) {
-        request.setRequestHeader("X-USERID", cookie.get("X-USERID"));
-        request.setRequestHeader("X-TOKEN", cookie.get("X-TOKEN"));
+        request.setRequestHeader("X-USERID", window.localStorage.getItem("X-USERID"));
+        request.setRequestHeader("X-TOKEN",  window.localStorage.getItem("X-TOKEN"));
       },
       complete: function (xhr) {
         var msg = xhr.responseJSON;
         console.log('返回数据:');
         console.log(msg);
-        if (msg.code === -100) {
+        if (msg.code === "800-888") {
           alert('身份信息过期，请重新访问应用');
+          window.location.href="/login/index.html#!/";
         } else {
           options.callBack(msg);
         }

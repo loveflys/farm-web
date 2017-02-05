@@ -42,7 +42,7 @@
     </i-form>
 </div>
 </div>
-  
+
 </template>
 <script>
   import store from '../store/login.js';
@@ -140,8 +140,10 @@
         store.login(param, (msg)=> {
           console.log(JSON.stringify(msg));
           if (msg.code === '0') {
-            cookie.set("X-USERID",msg.userid);
-            cookie.set("X-TOKEN",msg.token);
+            window.localStorage.setItem("X-USERID",msg.userid);
+            window.localStorage.setItem("X-TOKEN",msg.token);
+            window.localStorage.setItem("user-name",msg.name);
+            window.localStorage.setItem("user-avatar",msg.avatar);
             this.$Message.success('登录成功!');
             window.location.href="/home/index.html#!/"
           } else {

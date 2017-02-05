@@ -11,6 +11,41 @@ export default function (router) {
         require(['./home'], resolve);
       }
     },
+    '/address': {
+      component (resolve) {
+        require(['./address'], resolve);
+      }
+    },
+    '/ad': {
+      component (resolve) {
+        require(['./ad'], resolve);
+      }
+    },
+    '/info': {
+      component (resolve) {
+        require(['./info'], resolve);
+      }
+    },
+    '/market': {
+      component (resolve) {
+        require(['./market'], resolve);
+      }
+    },
+    '/manager': {
+      component (resolve) {
+        require(['./manager'], resolve);
+      }
+    },
+    '/user': {
+      component (resolve) {
+        require(['./user'], resolve);
+      }
+    },
+    '/class': {
+      component (resolve) {
+        require(['./class'], resolve);
+      }
+    }
   });
   // router.beforeEach(function (transition) {
   //   transition.next();
