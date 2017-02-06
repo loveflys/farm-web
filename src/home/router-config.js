@@ -45,6 +45,31 @@ export default function (router) {
       component (resolve) {
         require(['./class'], resolve);
       }
+    },
+    '/bbs': {
+      component (resolve) {
+        require(['./bbs'], resolve);
+      }
+    },
+    '/bbscomment': {
+      component (resolve) {
+        require(['./bbscomment'], resolve);
+      }
+    },
+    '/infocomment': {
+      component (resolve) {
+        require(['./infocomment'], resolve);
+      }
+    },
+    '/product': {
+      component (resolve) {
+        require(['./product'], resolve);
+      }
+    },
+    '/recipers': {
+      component (resolve) {
+        require(['./recipes'], resolve);
+      }
     }
   });
   // router.beforeEach(function (transition) {

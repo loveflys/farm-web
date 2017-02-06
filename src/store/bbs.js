@@ -1,21 +1,21 @@
 import API from 'src/store/api.js';
 module.exports = {
   /**
-  * 获取信息列表
+  * 获取论坛列表
   */
-  getInfoList: function (param, callBack) {
+  getBBSList: function (param, callBack) {
     API.ajax({
-      api: "info/list",
+      api: "bbs/list",
       callBack: callBack,
       data: param
     });
   },
   /**
-  * 获取信息评论列表
+  * 获取论坛评论列表
   */
-  getInfoCommentList: function (param, callBack) {
+  getBBSCommentList: function (param, callBack) {
     API.ajax({
-      api: "info/listcomment",
+      api: "bbs/listcomment",
       callBack: callBack,
       data: param
     });

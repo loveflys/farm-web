@@ -9,46 +9,41 @@
 
 
   <i-table border :content="self" :columns="columns" :data="data"></i-table>
-  <Page :total="pageCount" show-elevator></Page>
 </template>
 <script>
-  import store from '../store/address.js';
+  import store from '../store/bbs.js';
   import config from '../utils/config.js';
   import cookie from '../common/cookie.js';
   export default {
     data () {
       return {
         key: '',
-        pageIndex: 1,
-        pageCount: 2,
         self: this,
         columns: [
           {
-            title: '完整名称',
-            key: 'completeName',
+            title: '头像',
+            key: 'avatar',
             render (row, column, index) {
-              return `<strong>${row.name}</strong>`;
+              return `<img src="${row.avatar}" style="width:100px;height:100px;" />`;
             }
           },
           {
-            title: '区划编号',
-            key: 'divisionCode'
+            title: '评论人',
+            key: 'userName',
+            render (row, column, index) {
+              return `${row.userName}`;
+            }
           },
           {
-            title: '名称',
-            key: 'name'
+            title: '帖子id',
+            key: 'bbsId'
           },
           {
-            title: '地址id',
-            key: 'id'
-          },
-          {
-            title: '地址等级',
-            key: 'level'
-          },
-          {
-            title: '父级地址',
-            key: 'parentId'
+            title: '创建时间',
+            key: 'createTime',
+            render (row, column, index) {
+              return `${new Date(row.createTime).toLocaleString().replace(/\//g,"-")}`;
+            }
           },
           {
             title: '操作',
@@ -64,8 +59,8 @@
       }
     },
     watch : {
-      pageIndex () {
-        this.getData();
+      key () {
+        //this.getData();
       }
     },
     ready() {
@@ -75,20 +70,32 @@
     methods: {
       getData () {
         let param = {
-          name: this.key,
-          pagenum: this.pageIndex,
-          pagesize: 5,
-          paged: 1
+          title: this.key,
+          pagenum: 1,
+          pagesize: 10
         }
-        store.getAddrList(param, (msg)=> {
+        store.getBBSCommentList(param, (msg)=> {
           console.log(JSON.stringify(msg));
           if (msg.code === '0') {
             this.data = msg.list;
-            this.pageCount = msg.totalPage;
           } else {
-            this.$Message.error('获取地址列表失败!');
+            this.$Message.error('获取论坛帖子评论列表失败!');
           }
         });
+      },
+      getTime (value) {
+        if (!value) {
+          return '';
+        }
+        const date = new Date(value);
+        const year = date.getFullYear();
+        let m = date.getMonth()+1;
+        const month = m<10?'0'+m:m;
+        const day = date.getDate()<10?'0'+date.getDate():date.getDate();
+        const Hour = date.getHours()<10?'0'+date.getHours():date.getHours();
+        const Minute = date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes();
+        const Second = date.getSeconds()<10?'0'+date.getSeconds():date.getSeconds();
+        return `${year}-${month}-${day} ${Hour}:${Minute}:${Second}`;
       }
     }
   }

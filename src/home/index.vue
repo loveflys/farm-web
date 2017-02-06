@@ -12,9 +12,7 @@
                     {{name}}
                 </template>
                 <Menu-group title="设置">
-                    <Menu-item key="3-1">新增和启动</Menu-item>
-                    <Menu-item key="3-2">活跃分析</Menu-item>
-                    <Menu-item key="3-3" @click="logout()">退出</Menu-item>
+                    <Menu-item key="0-1" @click="logout()">退出</Menu-item>
                 </Menu-group>
             </Submenu>
           </Menu>
@@ -27,46 +25,53 @@
             <Icon type="ios-people"></Icon>
             首页
           </Menu-item>
-          <Menu-item key="2" @click="this.$router.go('/class')">
-            <Icon type="ios-people"></Icon>
-            农产品分类
-          </Menu-item>
+          <Submenu key="2">
+            <template slot="title">
+              <Icon type="stats-bars"></Icon>
+              农产品管理
+            </template>
+            <Menu-item key="2-1" @click="this.$router.go('/product')">农产品管理</Menu-item>
+            <Menu-item key="2-2" @click="this.$router.go('/class')">农产品分类</Menu-item>
+          </Submenu>
           <Menu-item key="3" @click="this.$router.go('/address')">
             <Icon type="ios-people"></Icon>
             地址管理
           </Menu-item>
-          <Menu-item key="4" @click="this.$router.go('/info')">
-            <Icon type="ios-people"></Icon>
-            信息管理
-          </Menu-item>
-          <Menu-item key="5" @click="this.$router.go('/ad')">
+          <Submenu key="4">
+            <template slot="title">
+              <Icon type="stats-bars"></Icon>
+              信息管理
+            </template>
+            <Menu-item key="4-1" @click="this.$router.go('/info')">信息管理</Menu-item>
+            <Menu-item key="4-2" @click="this.$router.go('/infocomment')">信息评论管理</Menu-item>
+          </Submenu>
+          <Submenu key="5">
+            <template slot="title">
+              <Icon type="stats-bars"></Icon>
+              论坛管理
+            </template>
+            <Menu-item key="5-1" @click="this.$router.go('/bbs')">论坛帖子管理</Menu-item>
+            <Menu-item key="5-2" @click="this.$router.go('/bbscomment')">论坛评论管理</Menu-item>
+          </Submenu>
+          <Menu-item key="6" @click="this.$router.go('/ad')">
             <Icon type="ios-people"></Icon>
             广告管理
           </Menu-item>
-          <Menu-item key="6" @click="this.$router.go('/market')">
+          <Menu-item key="7" @click="this.$router.go('/market')">
             <Icon type="ios-people"></Icon>
             市场管理
           </Menu-item>
-          <Submenu key="7">
+          <Submenu key="8">
             <template slot="title">
               <Icon type="stats-bars"></Icon>
               用户管理
             </template>
-            <Menu-item key="7-1" @click="this.$router.go('/user')">用户管理</Menu-item>
-            <Menu-item key="7-2" @click="this.$router.go('/manager')">商户管理</Menu-item>
-            <Menu-item key="7-3">信息评论管理</Menu-item>
-            <Menu-group title="论坛管理">
-              <Menu-item key="7-4">论坛帖子管理</Menu-item>
-              <Menu-item key="7-5">论坛评论管理</Menu-item>
-            </Menu-group>
+            <Menu-item key="8-1" @click="this.$router.go('/user')">用户管理</Menu-item>
+            <Menu-item key="8-2" @click="this.$router.go('/manager')">商户管理</Menu-item>
           </Submenu>
-          <Menu-item key="8">
+          <Menu-item key="8" @click="this.$router.go('/recipers')">
             <Icon type="ios-people"></Icon>
             食谱管理
-          </Menu-item>
-          <Menu-item key="9">
-            <Icon type="ios-people"></Icon>
-            农产品管理
           </Menu-item>
         </Menu>
       </i-col>
