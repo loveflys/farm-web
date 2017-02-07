@@ -11,39 +11,109 @@ export default function (router) {
         require(['./home'], resolve);
       }
     },
-    '/address': {
+    '/address/list': {
       component (resolve) {
         require(['./address'], resolve);
       }
     },
-    '/ad': {
+    '/address/add': {
+      component (resolve) {
+        require(['./addaddress'], resolve);
+      }
+    },
+    '/address/edit/:id': {
+      component (resolve) {
+        require(['./editaddress'], resolve);
+      }
+    },
+    '/ad/list': {
       component (resolve) {
         require(['./ad'], resolve);
       }
     },
-    '/info': {
+    '/ad/add': {
+      component (resolve) {
+        require(['./addad'], resolve);
+      }
+    },
+    '/ad/edit/:id': {
+      component (resolve) {
+        require(['./editad'], resolve);
+      }
+    },
+    '/info/list': {
       component (resolve) {
         require(['./info'], resolve);
       }
     },
-    '/market': {
+    '/info/add': {
+      component (resolve) {
+        require(['./addinfo'], resolve);
+      }
+    },
+    '/info/edit/:id': {
+      component (resolve) {
+        require(['./editinfo'], resolve);
+      }
+    },
+    '/market/list': {
       component (resolve) {
         require(['./market'], resolve);
       }
     },
-    '/manager': {
+    '/market/add': {
+      component (resolve) {
+        require(['./addmarket'], resolve);
+      }
+    },
+    '/market/edit/:id': {
+      component (resolve) {
+        require(['./editmarket'], resolve);
+      }
+    },
+    '/manager/list': {
       component (resolve) {
         require(['./manager'], resolve);
       }
     },
-    '/user': {
+    '/manager/add': {
+      component (resolve) {
+        require(['./addmanager'], resolve);
+      }
+    },
+    '/manager/edit/:id': {
+      component (resolve) {
+        require(['./editmanager'], resolve);
+      }
+    },
+    '/user/list': {
       component (resolve) {
         require(['./user'], resolve);
       }
     },
-    '/class': {
+    '/user/add': {
+      component (resolve) {
+        require(['./adduser'], resolve);
+      }
+    },
+    '/user/edit/:id': {
+      component (resolve) {
+        require(['./edituser'], resolve);
+      }
+    },
+    '/class/list': {
       component (resolve) {
         require(['./class'], resolve);
+      }
+    },
+    '/class/add': {
+      component (resolve) {
+        require(['./addclass'], resolve);
+      }
+    },
+    '/class/edit/:id': {
+      component (resolve) {
+        require(['./editclass'], resolve);
       }
     },
     '/bbs': {
@@ -61,14 +131,34 @@ export default function (router) {
         require(['./infocomment'], resolve);
       }
     },
-    '/product': {
+    '/product/list': {
       component (resolve) {
         require(['./product'], resolve);
       }
     },
-    '/recipers': {
+    '/product/add': {
+      component (resolve) {
+        require(['./addpro'], resolve);
+      }
+    },
+    '/product/edit/:id': {
+      component (resolve) {
+        require(['./editpro'], resolve);
+      }
+    },
+    '/recipers/list': {
       component (resolve) {
         require(['./recipes'], resolve);
+      }
+    },
+    '/recipers/add': {
+      component (resolve) {
+        require(['./addrecipes'], resolve);
+      }
+    },
+    '/recipers/edit/:id': {
+      component (resolve) {
+        require(['./editrecipes'], resolve);
       }
     }
   });

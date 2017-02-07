@@ -69,7 +69,6 @@
           pagesize: 10
         }
         store.getManagerList(param, (msg)=> {
-          console.log(JSON.stringify(msg));
           if (msg.code === '0') {
             this.data = msg.lists;
           } else {

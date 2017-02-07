@@ -91,7 +91,6 @@
           pagesize: 10
         }
         store.getProductList(param, (msg)=> {
-          console.log(JSON.stringify(msg));
           if (msg.code === '0') {
             this.data = msg.list;
           } else {
