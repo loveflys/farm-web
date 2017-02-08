@@ -1,6 +1,16 @@
 import API from 'src/store/api.js';
 module.exports = {
   /**
+  * 获取七牛云tokjen和url
+  */
+  getToken: function (param, callBack) {
+    API.ajax({
+      api: "file/getToken",
+      callBack: callBack,
+      data: param
+    }, 'get');
+  },
+  /**
   * 获取用户列表
   */
   getUserList: function (param, callBack) {

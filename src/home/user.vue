@@ -24,7 +24,7 @@
             title: '头像',
             key: 'avatar',
             render (row, column, index) {
-              return `<img src="${row.avatar}" />`;
+              return `<img src="${row.avatar}" style="width:100px;height:100px;" />`;
             }
           },
           {

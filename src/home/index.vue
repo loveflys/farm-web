@@ -114,6 +114,7 @@
     </Row>
 </template>
 <script>
+  import '../assets/css/weui.css';
   import store from '../store/user.js';
   import config from '../utils/config.js';
   import cookie from '../common/cookie.js';

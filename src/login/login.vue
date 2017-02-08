@@ -47,6 +47,7 @@
 <script>
   import store from '../store/login.js';
   import config from '../utils/config.js';
+  import aes from '../utils/aes.js';
   import cookie from '../common/cookie.js';
   export default {
     data () {
@@ -131,9 +132,9 @@
         })
       },
       login () {
-        let pwd = this.aes(this.form.passwd)+"";
+        let pwd = aes.encode(this.form.passwd)+"";
         let temp = pwd+"*"+this.form.username;
-        let ciphertext = this.aes(temp)+"";
+        let ciphertext = aes.encode(temp)+"";
         let param = {
           ciphertext: ciphertext
         }
@@ -150,15 +151,6 @@
             this.$Message.error('登录失败!');
           }
         });
-      },
-      aes (data) {
-        let crypto = require('crypto');
-        var cipher = crypto.createCipheriv(config.ALGORITHM, config.KEY,config.IV);
-        var crypted = cipher.update(data, config.CLEARENCODING, 'binary');
-        crypted += cipher.final('binary');
-        crypted = new Buffer(crypted, 'binary').toString(config.CIPHERENCODING);
-        console.log(crypted);
-        return crypted;
       },
       handleReset (name) {
         this.$refs[name].resetFields();

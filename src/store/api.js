@@ -4,7 +4,13 @@ module.exports = {
   // 数据调用请求.参数包括
   // callBack:回调函数
   // data:提交参数
-  ajax: function (options) {
+  ajax: function (options, methods) {
+    let method = 'post';
+    let withCredential = true;
+    if (methods && methods === 'get') {
+      method = methods;
+      withCredential = false;
+    }
     $.ajax({
       url: config.SERVER_URL + options.api,
       beforeSend: function(request) {
@@ -22,8 +28,8 @@ module.exports = {
           options.callBack(msg);
         }
       },
-      method: "post",
-      xhrFields: {withCredentials: true},
+      method: method,
+      xhrFields: {withCredentials: withCredential},
       crossDomain: true,
       data: options.data,
       dataType: "JSON"

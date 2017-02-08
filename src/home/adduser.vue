@@ -12,8 +12,41 @@
       <Form-item label="昵称" prop="name">
           <i-input :value.sync="formValidate.name" placeholder="请输入昵称"></i-input>
       </Form-item>
+      <Form-item label="头像" prop="avatar">
+        <div class="demo-upload-list" v-if="!showupload">
+          <img :src="formValidate.avatar">
+          <div class="demo-upload-list-cover">
+              <Icon type="ios-eye-outline" @click="handleView()"></Icon>
+              <Icon type="ios-trash-outline" @click="handleRemove()"></Icon>
+          </div>
+        </div>
+        <div v-if="showupload" class="weui_uploader_input_wrp" style="
+          display: inline-block;
+          width: 60px;
+          height: 60px;
+          text-align: center;
+          line-height: 60px;
+          border: 1px solid transparent;
+          border-radius: 4px;
+          overflow: hidden;
+          background: #fff;
+          position: relative;
+          box-shadow: 0 1px 1px rgba(0,0,0,.2);">
+            <input style="opacity: 0;
+              width: 100%;
+              height: 100%;
+              position: relative;
+              display: block;" @change="uploadFile(1)" type="file" accept="image/jpg,image/jpeg,image/png" name="" id="files" accept="*/*">
+        </div>
+        <Modal title="查看图片" :visible.sync="visible">
+            <img :src="formValidate.avatar" v-if="visible" style="width: 100%">
+        </Modal>
+      </Form-item>
       <Form-item label="真实姓名" prop="realName">
           <i-input :value.sync="formValidate.realName" placeholder="请输入真实姓名"></i-input>
+      </Form-item>
+      <Form-item label="住址" prop="address">
+          <i-input :value.sync="formValidate.address" placeholder="请输入住址"></i-input>
       </Form-item>
       <Form-item label="性别">
             <Radio-group :model.sync="formValidate.sex">
@@ -22,13 +55,13 @@
             </Radio-group>
       </Form-item>
       <Form-item label="类型">
-            <Radio-group :model.sync="formValidate.sex">
+            <Radio-group :model.sync="formValidate.type">
                 <Radio value="1">用户</Radio>
                 <Radio value="2">商户</Radio>
             </Radio-group>
       </Form-item>
       <Form-item label="推送">
-            <Radio-group :model.sync="formValidate.sex">
+            <Radio-group :model.sync="formValidate.pushsetting">
                 <Radio value="0">不接受</Radio>
                 <Radio value="1">接受</Radio>
                 <Radio value="2">仅在wifi下接收</Radio>
@@ -43,12 +76,17 @@
   </Row>
 </template>
 <script>
-  import store from '../store/address.js';
+  import store from '../store/user.js';
   import config from '../utils/config.js';
+  import aes from '../utils/aes.js';
   import cookie from '../common/cookie.js';
   export default {
     data () {
       return {
+        showupload: true,
+        qiniutoken: '',
+        qiniuUrl: '',
+        visible: false,
         formValidate: {
           phone: '',
           pwd: '',
@@ -63,31 +101,102 @@
           ciphertext: ''
         },
         ruleValidate: {
-          fullName: [
-            { required: true, message: '全称不能为空', trigger: 'blur' }
+          phone: [
+            { required: true, message: '手机号不能为空', trigger: 'blur' }
+          ],
+          pwd: [
+            { required: true, message: '密码不能为空', trigger: 'blur' }
           ],
           name: [
-            { required: true, message: '名称不能为空', trigger: 'blur' }
+            { required: true, message: '名字不能为空', trigger: 'blur' }
           ],
-          code: [
-            { required: true, message: '编号不能为空', trigger: 'blur' }
+          realName: [
+            { required: true, message: '真实姓名不能为空', trigger: 'blur' }
           ],
-          level: [
-            { required: true, message: '级别不能为空', trigger: 'change' }
+          address: [
+            { required: true, message: '住址不能为空', trigger: 'blur' }
           ],
-          parentId: [
-            { required: true, message: '父级不能为空', trigger: 'change' }
+          avatar: [
+            { required: true, message: '头像不能为空', trigger: 'blur' }
           ]
         }
       }
     },
     ready() {
       window.x = this;
-      this.$nextTick(function () {
-        this.$parent.$root.$data.activekey = "3-2";
-      });
+      this.getToken();
+      //this.$nextTick(function () {
+      //  this.$parent.$root.$data.activekey = "3-2";
+      //});
     },
     methods: {
+      uploadFile () {
+        let _this = this;
+        let files = document.getElementById('files').files[0];
+        if (files === null || files === undefined) {
+          _this.$Notice.warning({
+              title: '提示',
+              desc: '请先选择文件。'
+          });
+          return;
+        }
+        if (files.size/(1024*1024) > 2) {
+          _this.$Notice.warning({
+              title: '超出文件大小限制',
+              desc: '文件' + files.name + ' 太大，不能超过 2M。'
+          });
+          return;
+        }
+
+        let oData = new FormData();
+        oData.append("file", files);
+        oData.append("token", this.qiniutoken);
+        var oReq = new XMLHttpRequest();
+        oReq.open( "POST", config.QINIU_URL , true );
+        oReq.onload = function(oEvent) {
+          let res = JSON.parse(oReq.response);
+          if (oReq.status === 200 && res.key) {
+            _this.formValidate.avatar = _this.qiniuUrl + res.key;
+            _this.showupload = false;
+          } else {
+            _this.$Notice.warning({
+                title: '提示',
+                desc: '上传失败。'
+            });
+          }
+        };
+        oReq.onerror = function(err) {
+          _this.$Notice.warning({
+              title: '提示',
+              desc: '上传错误。'
+          });
+        };
+        oReq.send(oData);
+      },
+      getToken () {
+        let _this = this;
+        let param = {};
+        store.getToken(param, function (data) {
+          console.log(JSON.stringify(data));
+          if (data.code === "0") {
+            _this.qiniutoken = data.token;
+            _this.qiniuUrl = data.url;
+          } else {
+            _this.$Notice.warning({
+                title: '提示',
+                desc: data.msg
+            });
+          }
+        });
+      },
+      handleView () {
+        this.visible = true;
+      },
+      handleRemove (file) {
+        // 从 upload 实例删除数据
+        this.formValidate.avatar = "";
+        this.showupload = true;
+      },
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
@@ -102,11 +211,15 @@
       },
       addData () {
         let _this = this;
-        store.addAddr(this.formValidate, (msg)=> {
+        let pwd = aes.encode(this.formValidate.pwd)+"";
+        let temp = pwd+"*"+this.formValidate.phone;
+        let ciphertext = aes.encode(temp)+"";
+        this.formValidate.ciphertext = ciphertext;
+        store.addUser(this.formValidate, (msg)=> {
           console.log(JSON.stringify(msg));
           if (msg.code === '0') {
             this.$Message.success('提交成功!', 1 , function () {
-              _this.$router.go('/address/list');
+              _this.$router.go('/user/list');
             });
           } else {
             this.$Message.error('提交失败!');
@@ -116,3 +229,41 @@
     }
   }
 </script>
+<style>
+    .demo-upload-list{
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,.2);
+        margin-right: 4px;
+    }
+    .demo-upload-list img{
+        width: 100%;
+        height: 100%;
+    }
+    .demo-upload-list-cover{
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,.6);
+    }
+    .demo-upload-list:hover .demo-upload-list-cover{
+        display: block;
+    }
+    .demo-upload-list-cover i{
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        margin: 0 2px;
+    }
+</style>
