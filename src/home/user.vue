@@ -1,4 +1,25 @@
 <style>
+    .tabs-style > .ivu-tabs-card > .ivu-tabs-content {
+        height: 120px;
+        margin-top: -16px;
+    }
+
+    .tabs-style > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
+        background: #fff;
+        padding: 16px;
+        height: 100vh;
+    }
+
+    .tabs-style > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+        border-color: transparent;
+    }
+
+    .tabs-style > .ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+        border-color: #fff;
+    }
+    .ivu-tabs {
+      height: 100vh;
+    }
 </style>
 <template>
   <Row style="margin: 10px 0">
@@ -8,7 +29,38 @@
   </Row>
 
 
-  <i-table border :content="self" :columns="columns" :data="data"></i-table>
+
+  <i-col class="tabs-style" style="background: #e3e8ee;padding:16px;height: 100vh;">
+    <Tabs type="card" :active-key.sync="tabkey">
+      <Tab-pane key="all" label="所有">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+      </Tab-pane>
+      <Tab-pane key="user" label="用户">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+      </Tab-pane>
+      <Tab-pane key="notverify" label="待审核商户">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+      </Tab-pane>
+      <Tab-pane key="business" label="商户">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+      </Tab-pane>
+    </Tabs>
+  </i-col>
+  <Modal
+    :visible.sync="modal"
+    :title="modaltitle"
+    ok-text="审核通过"
+    cancel-text="审核不通过"
+    @on-ok="ok"
+    @on-cancel="cancel">
+    <p>真实姓名：</p>{{checkitem.realName}}<br />
+    <p>商铺地址: </p>{{checkitem.shopLocation?(checkitem.shopLocation.latitude+"|"+checkitem.shopLocation.longitude):""}}<br />
+    <p>对话框内容</p><br />
+    <p>对话框内容</p><br />
+    <p>对话框内容</p><br />
+    <p>对话框内容</p><br />
+    <p>对话框内容</p><br />
+  </Modal>
 </template>
 <script>
   import store from '../store/user.js';
@@ -17,7 +69,13 @@
   export default {
     data () {
       return {
+        tabkey: 'all',
+        modal: false,
+        modaltitle: '123',
+        checkitem: null,
         key: '',
+        status: '-1', //审核状态  	 * 0-未审核     	 * 1-待审核     	 * 2-审核通过     	 * 3-审核不通过
+        type: '0', //1-用户 2-商户
         self: this,
         columns: [
           {
@@ -45,8 +103,14 @@
           {
             title: '手机号码',
             key: 'phone'
-          }
-          ,
+          },
+          {
+            title: '状态',
+            key: 'status',
+            render (row, column, index) {
+              return `${row.type===1?(row.disabled?"禁用":"正常"):(row.status===0?"未审核":(row.status===1?"待审核":(row.status===2?(row.disabled?"禁用":"审核通过"):"审核不通过")))}`;
+            }
+          },
           {
             title: 'id',
             key: 'id'
@@ -56,7 +120,7 @@
             key: 'action',
             align: 'center',
             render (row, column, index) {
-              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button type="${row.disabled===0?'error':'success'}" size="small" @click="update(${index})">${row.disabled===0?"封停":"启用"}</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
+              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button><i-button v-if="${row.status===1}" type="success" size="small" @click="check(${index})">审核</i-button> <i-button v-if="${row.status===2}" type="${row.disabled===0?'error':'success'}" size="small" @click="update(${index})">${row.disabled===0?"封停":"启用"}</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
             }
           }
         ],
@@ -64,8 +128,26 @@
       }
     },
     watch : {
-      key () {
-        //this.getData();
+      tabkey () {
+        switch(this.tabkey) {
+          case "all":
+            this.type = "0";
+            this.status = "-1";
+            break;
+          case "user":
+            this.type = "1";
+            this.status = "-1";
+            break;
+          case "notverify":
+            this.type = "2";
+            this.status = "1";
+            break;
+          case "business":
+            this.type = "2";
+            this.status = "-1";
+            break;
+        }
+        this.getData();
       }
     },
     ready() {
@@ -76,12 +158,17 @@
       getData () {
         let param = {
           name: this.key,
+          status: this.status,
+          type: this.type,
           pagenum: 1,
           pagesize: 10
         }
         store.getUserList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.users;
+            if (this.data.length > 0) {
+              this.checkitem = this.data[0];
+            }
           } else {
             this.$Message.error('获取用户列表失败!');
           }
@@ -117,6 +204,11 @@
       },
       edit (index) {
         this.$router.go("/user/edit/"+this.data[index].id);
+      },
+      check (index) {
+        this.checkitem = this.data[index];
+        this.modaltitle = this.data[index].type === 1? "用户信息":"商户信息";
+        this.modal = true;
       }
     }
   }

@@ -8,6 +8,6 @@ module.exports = {
       api: "market/list",
       callBack: callBack,
       data: param
-    });
+    }, 'get');
   },
 };
