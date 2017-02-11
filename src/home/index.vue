@@ -32,11 +32,10 @@
             </template>
             <Menu-group title="农产品管理">
               <Menu-item key="2-1" @click="this.$router.go('/product/list')">农产品列表</Menu-item>
-              <Menu-item key="2-2" @click="this.$router.go('/product/add')">新建农产品</Menu-item>
             </Menu-group>
             <Menu-group title="农产品分类">
-              <Menu-item key="2-3" @click="this.$router.go('/class/list')">农产品分类列表</Menu-item>
-              <Menu-item key="2-4" @click="this.$router.go('/class/add')">新建农产品分类</Menu-item>
+              <Menu-item key="2-2" @click="this.$router.go('/class/list')">农产品分类列表</Menu-item>
+              <Menu-item key="2-3" @click="this.$router.go('/class/add')">新建农产品分类</Menu-item>
             </Menu-group>
           </Submenu>
           <Submenu key="3">

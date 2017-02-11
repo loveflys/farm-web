@@ -8,6 +8,16 @@ module.exports = {
       api: "pro/list",
       callBack: callBack,
       data: param
+    }, 'get');
+  },
+  /**
+  * 产品上下架
+  */
+  updateProduct: function (param, callBack) {
+    API.ajax({
+      api: "pro/update",
+      callBack: callBack,
+      data: param
     });
   },
 };

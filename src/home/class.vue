@@ -95,19 +95,21 @@
       window.x = this;
       this.getData();
       this.$nextTick(function () {
-        this.$parent.$root.$data.activekey = "2-3";
+        this.$parent.$root.$data.activekey = "2-2";
       });
     },
     methods: {
       getData () {
         let param = {
           title: this.key,
-          pagenum: this.pageNum,
-          pagesize: this.pageSize
+          pagenum: this.pageIndex,
+          pagesize: this.pageSize,
+          paged: 1
         }
         store.getClassList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.list;
+            this.pageCount = msg.totalPage;
           } else {
             this.$Message.error('获取分类列表失败!');
           }

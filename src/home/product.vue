@@ -4,11 +4,11 @@
   <Row style="margin: 10px 0">
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
-    <i-button span="4" type="info">新建</i-button>
   </Row>
 
 
   <i-table border :content="self" :columns="columns" :data="data"></i-table>
+  <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
 </template>
 <script>
   import store from '../store/product.js';
@@ -18,6 +18,9 @@
     data () {
       return {
         key: '',
+        pageIndex: 1,
+        pageSize: 10,
+        pageCount: 1,
         self: this,
         columns: [
           {
@@ -67,7 +70,7 @@
             width: 150,
             align: 'center',
             render (row, column, index) {
-              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
+              return `<i-button type="${row.is_off_shelve?"primary":"error"}" size="small" @click="update(${index})">${row.is_off_shelve?"上架":"下架"}</i-button>`;
             }
           }
         ],
@@ -75,26 +78,47 @@
       }
     },
     watch : {
-      key () {
-        //this.getData();
+      pageIndex () {
+        this.getData();
       }
     },
     ready() {
       window.x = this;
       this.getData();
+      this.$nextTick(function () {
+        this.$parent.$root.$data.activekey = "2-1";
+      });
     },
     methods: {
       getData () {
         let param = {
           title: this.key,
-          pagenum: 1,
-          pagesize: 10
+          pagenum: this.pageIndex,
+          pagesize: this.pageSize,
+          paged: 1
         }
         store.getProductList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.list;
+            this.pageCount = msg.totalPage;
           } else {
             this.$Message.error('获取产品列表失败!');
+          }
+        });
+      },
+      update (index) {
+        let param = {
+          id: this.data[index].id,
+          is_off_shelve: this.data[index].is_off_shelve?'2':'1'
+        }
+        let _this = this;
+        store.updateProduct(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('操作成功!', 1, function () {
+              _this.getData();
+            });
+          } else {
+            this.$Message.error('操作失败!');
           }
         });
       },

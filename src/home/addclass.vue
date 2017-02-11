@@ -75,7 +75,7 @@
     ready() {
       window.x = this;
       this.$nextTick(function () {
-        this.$parent.$root.$data.activekey = "2-4";
+        this.$parent.$root.$data.activekey = "2-3";
       });
     },
     methods: {
