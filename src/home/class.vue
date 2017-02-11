@@ -121,6 +121,7 @@
         }
         store.delClass(param, (msg)=> {
           if (msg.code === '0') {
+            this.$Message.info('删除成功!');
             this.data.splice(index, 1);
           } else {
             this.$Message.error('删除分类失败!');

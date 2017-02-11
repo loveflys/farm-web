@@ -8,7 +8,7 @@ module.exports = {
       api: "division/list",
       callBack: callBack,
       data: param
-    });
+    }, 'get');
   },
   /**
   * 删除地址
@@ -48,6 +48,16 @@ module.exports = {
       api: "division/get",
       callBack: callBack,
       data: param
-    });
+    }, 'get');
+  },
+  /**
+  * 获取地址详情
+  */
+  getAddrByCode: function (param, callBack) {
+    API.ajax({
+      api: "division/getbycode",
+      callBack: callBack,
+      data: param
+    }, 'get');
   }
 };

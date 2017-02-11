@@ -4,11 +4,12 @@
   <Row style="margin: 10px 0">
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
-    <i-button span="4" type="info">新建</i-button>
+    <i-button span="4" type="info" @click="this.$router.go('/market/add')">新建</i-button>
   </Row>
 
 
   <i-table border :content="self" :columns="columns" :data="data"></i-table>
+  <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
 </template>
 <script>
   import store from '../store/market.js';
@@ -18,6 +19,9 @@
     data () {
       return {
         key: '',
+        pageIndex: 1,
+        pageSize: 10,
+        pageCount: 1,
         self: this,
         columns: [
           {
@@ -60,28 +64,49 @@
       }
     },
     watch : {
-      key () {
-        //this.getData();
+      pageIndex () {
+        this.getData();
       }
     },
     ready() {
       window.x = this;
       this.getData();
+      this.$nextTick(function () {
+        this.$parent.$root.$data.activekey = "7-1";
+      });
     },
     methods: {
       getData () {
         let param = {
           name: this.key,
-          pagenum: 1,
-          pagesize: 10
+          pagenum: this.pageIndex,
+          pagesize: this.pageSize,
+          paged: 1
         }
         store.getMarketList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.list;
+            this.pageCount = msg.totalPage;
           } else {
             this.$Message.error('获取市场列表失败!');
           }
         });
+      },
+      remove (index) {
+        let param = {
+          id: this.data[index].id
+        }
+        store.delMarket(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('删除成功!');
+            this.data.splice(index, 1);
+          } else {
+            this.$Message.error('删除市场失败!');
+          }
+        });
+      },
+      edit (index) {
+        this.$router.go("/market/edit/"+this.data[index].id);
       }
     }
   }

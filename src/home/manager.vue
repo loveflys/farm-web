@@ -1,14 +1,18 @@
 <style>
+  .ivu-page {
+    margin-top: 20px;
+  }
 </style>
 <template>
   <Row style="margin: 10px 0">
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
-    <i-button span="4" type="info">新建</i-button>
+    <i-button span="4" type="info" @click="this.$router.go('/manager/add')">新建</i-button>
   </Row>
 
 
   <i-table border :content="self" :columns="columns" :data="data"></i-table>
+  <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
 </template>
 <script>
   import store from '../store/manager.js';
@@ -18,34 +22,54 @@
     data () {
       return {
         key: '',
+        pageIndex: 1,
+        pageSize: 10,
+        pageCount: 1,
         self: this,
         columns: [
           {
-            title: '类型',
-            key: 'divisionCode',
+            title: '头像',
+            key: 'avatar',
             render (row, column, index) {
-              return `${row.type===2?"超级管理员":"管理员"}`;
+              return `<img src="${row.avatar}" style="width:100px;height:100px;" />`;
             }
+          },
+          {
+            title: '账户',
+            key: 'login'
           },
           {
             title: '名称',
             key: 'name'
           },
           {
+            title: '真实姓名',
+            key: 'realName'
+          },
+          {
+            title: '类型',
+            key: 'divisionCode',
+            render (row, column, index) {
+              return `${row.type===4?"超级管理员":"普通管理员"}`;
+            }
+          },
+          {
+            title: '状态',
+            key: 'status',
+            render (row, column, index) {
+              return `${row.isdelete===0?(row.disabled===1?"禁用":"正常"):"已删除"}`;
+            }
+          },
+          {
             title: '手机号码',
             key: 'phone'
           },
           {
-            title: 'id',
-            key: 'id'
-          },
-          {
             title: '操作',
             key: 'action',
-            width: 150,
             align: 'center',
             render (row, column, index) {
-              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
+              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button type="${row.disabled===0?'error':'success'}" size="small" @click="update(${index})">${row.disabled===0?"封停":"启用"}</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
             }
           }
         ],
@@ -53,29 +77,66 @@
       }
     },
     watch : {
-      key () {
-        //this.getData();
+      pageIndex () {
+        this.getData();
       }
     },
     ready() {
       window.x = this;
       this.getData();
+      this.$nextTick(function () {
+        this.$parent.$root.$data.activekey = "8-3";
+      });
     },
     methods: {
       getData () {
         let param = {
           name: this.key,
-          pagenum: 1,
-          pagesize: 10
+          pagenum: this.pageIndex,
+          pagesize: this.pageSize,
+          paged: 1
         }
         store.getManagerList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.lists;
+            this.pageCount = msg.totalPage;
           } else {
             this.$Message.error('获取管理员列表失败!');
           }
         });
-      }
+      },
+      remove (index) {
+        let param = {
+          id: this.data[index].id
+        }
+        store.delManager(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('删除成功!');
+            this.data.splice(index, 1);
+          } else {
+            this.$Message.error('删除管理员失败!');
+          }
+        });
+      },
+      edit (index) {
+        this.$router.go("/manager/edit/"+this.data[index].id);
+      },
+      update (index) {
+        let param = {
+          id: this.data[index].id,
+          disabled: this.data[index].disabled===0?'1':'0'
+        }
+        let _this = this;
+        store.updateManager(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('操作成功!', 1, function () {
+              _this.getData();
+            });
+          } else {
+            this.$Message.error('操作失败!');
+          }
+        });
+      },
     }
   }
 </script>

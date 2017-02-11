@@ -92,9 +92,9 @@
               <Menu-item key="8-1" @click="this.$router.go('/user/list')">用户列表</Menu-item>
               <Menu-item key="8-2" @click="this.$router.go('/user/add')">新建用户</Menu-item>
             </Menu-group>
-            <Menu-group title="商户管理">
-              <Menu-item key="8-3" @click="this.$router.go('/manager/list')">商户列表</Menu-item>
-              <Menu-item key="8-4" @click="this.$router.go('/manager/add')">新建商户</Menu-item>
+            <Menu-group title="管理员管理">
+              <Menu-item key="8-3" @click="this.$router.go('/manager/list')">管理员列表</Menu-item>
+              <Menu-item key="8-4" @click="this.$router.go('/manager/add')">新建管理员</Menu-item>
             </Menu-group>
           </Submenu>
           <Submenu key="9">
