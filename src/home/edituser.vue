@@ -6,9 +6,6 @@
       <Form-item label="手机号" prop="phone">
           <i-input :value="formValidate.phone" placeholder="请输入手机号" disabled></i-input>
       </Form-item>
-      <Form-item label="密码" prop="pwd">
-          <i-input type="password" :value.sync="formValidate.pwd" placeholder="请输入密码"></i-input>
-      </Form-item>
       <Form-item label="昵称" prop="name">
           <i-input :value.sync="formValidate.name" placeholder="请输入昵称"></i-input>
       </Form-item>
@@ -165,7 +162,6 @@
           lon: null,
           lat: null,
           phone: '',
-          pwd: '',
           name: '',
           realName: '',
           address: '',
@@ -181,9 +177,6 @@
         ruleValidate: {
           phone: [
             { required: true, message: '手机号不能为空', trigger: 'blur' }
-          ],
-          pwd: [
-            { required: true, message: '密码不能为空', trigger: 'blur' }
           ],
           name: [
             { required: true, message: '名字不能为空', trigger: 'blur' }
@@ -226,9 +219,18 @@
               this.showupload = false;
             }
             window.map = new BMap.Map("allmap");
+            if (msg.user.type === 2) {
+              if (msg.user.identityImg && msg.user.identityImg.length > 0) {
+                this.showuploadidentityImg = false;
+              }
+              if (msg.user.shopImg && msg.user.shopImg.length > 0) {
+                this.showuploadshopImg = false;
+              }
+            }
             this.formValidate = {
-              lon: msg.user.shopLocation.longitude,
-              lat: msg.user.shopLocation.latitude,
+              shopLocation: msg.user.shopLocation,
+              lon: msg.user.shopLocation?msg.user.shopLocation.longitude:"",
+              lat: msg.user.shopLocation?msg.user.shopLocation.latitude:"",
               id: msg.user.id,
               phone: msg.user.phone,
               pwd: '',
@@ -240,12 +242,13 @@
               address: msg.user.address,
               deviceId: msg.user.deviceId,
               avatar: msg.user.avatar,
-              sex: msg.user.sex,  // 1男 2女
+              sex: msg.user.sex + '',  // 1男 2女
               type: msg.user.type, // 1用户 2商户
               pushsetting: msg.user.pushsetting, //0: 不接受 1：接收  2：仅在wifi下接收
               ciphertext: ''
             };
-            map.addEventListener("tilesloaded",this.getMap);
+            this.getMap();
+
           } else {
             this.$Message.error('获取用户信息失败!', 1 , function () {
               _this.$router.go('/user/list');
@@ -253,18 +256,69 @@
           }
         });
       },
+      showInfo (e) {
+        let allOverlay = map.getOverlays();
+        for (let item of allOverlay){
+          map.removeOverlay(item);
+        }
+        let point = new BMap.Point(e.point.lng, e.point.lat);
+        this.formValidate.lon = e.point.lng;
+        this.formValidate.lat = e.point.lat;
+        let marker = new BMap.Marker(point);
+        this.formValidate.marketid = "";
+        this.getMarket();
+        map.addOverlay(marker);
+      },
       getMap () {
         window.map = new BMap.Map("allmap");
-        let lon = '116.404';
-        let lat = '39.915';
-        if (this.formValidate.lon > 0 && this.formValidate.lat > 0) {
+        var lon = '116.404';
+        var lat = '39.915';
+        if (this.formValidate.shopLocation) {
           lon = this.formValidate.lon;
           lat = this.formValidate.lat;
+          var point = new BMap.Point(lon,lat);
+
+          let marker = new BMap.Marker(point);
+
+          map.addOverlay(marker);
+
+          map.centerAndZoom(point,22);
+
+        } else {
+          var myCity = new BMap.LocalCity();
+          myCity.get(this.myFun);
+          this.setCenter();
         }
-        let point = new BMap.Point(lon,lat);
-        map.centerAndZoom(point,12);
         map.enableScrollWheelZoom();
         map.addEventListener("click", this.showInfo);
+        map.addEventListener("tilesloaded",this.setCenter);
+      },
+      showInfo (e) {
+        let allOverlay = map.getOverlays();
+        for (let item of allOverlay){
+          map.removeOverlay(item);
+        }
+        let point = new BMap.Point(e.point.lng, e.point.lat);
+        this.formValidate.lon = e.point.lng;
+        this.formValidate.lat = e.point.lat;
+        let marker = new BMap.Marker(point);
+        this.getMarket();
+        map.addOverlay(marker);
+      },
+      setCenter() {
+        let temp = map.getCenter();
+        let point = new BMap.Point(temp.lng,temp.lat);
+        this.formValidate.lon = temp.lng;
+        this.formValidate.lat = temp.lat;
+        let marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+        this.getMarket();
+        map.removeEventListener("tilesloaded", this.setCenter);
+      },
+      myFun (result) {
+        var cityName = result.name;
+        map.setCenter(cityName);
+        console.log("当前定位城市:"+cityName);
       },
       getMarket () {
         let _this = this;
@@ -278,7 +332,6 @@
           max: 100
         };
         marketStore.getMarketList(param, function (data) {
-          console.log(JSON.stringify(data));
           if (data.code === "0") {
             _this.MarketList = data.list;
           } else {
@@ -374,7 +427,6 @@
         let _this = this;
         let param = {};
         store.getToken(param, function (data) {
-          console.log(JSON.stringify(data));
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
@@ -429,12 +481,10 @@
       },
       editData () {
         let _this = this;
-        let pwd = aes.encode(this.formValidate.pwd)+"";
-        let temp = pwd+"*"+this.formValidate.phone;
+        let temp = "*"+this.formValidate.phone;
         let ciphertext = aes.encode(temp)+"";
         this.formValidate.ciphertext = ciphertext;
         store.updateUser(this.formValidate, (msg)=> {
-          console.log(JSON.stringify(msg));
           if (msg.code === '0') {
             this.$Message.success('修改成功!', 1 , function () {
               _this.$router.go('/user/list');

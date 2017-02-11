@@ -18,7 +18,7 @@ module.exports = {
       api: "user/list",
       callBack: callBack,
       data: param
-    });
+    }, 'get');
   },
   /**
   * 退出登录
@@ -61,6 +61,16 @@ module.exports = {
     });
   },
   /**
+  * 审核商户
+  */
+  checkUser: function (param, callBack) {
+    API.ajax({
+      api: "user/check",
+      callBack: callBack,
+      data: param
+    });
+  },
+  /**
   * 获取用户详情
   */
   getUser: function (param, callBack) {
@@ -68,6 +78,6 @@ module.exports = {
       api: "user/get",
       callBack: callBack,
       data: param
-    });
+    }, 'get');
   }
 };

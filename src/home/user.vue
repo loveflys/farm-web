@@ -34,32 +34,47 @@
     <Tabs type="card" :active-key.sync="tabkey">
       <Tab-pane key="all" label="所有">
         <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
       </Tab-pane>
       <Tab-pane key="user" label="用户">
         <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
       </Tab-pane>
       <Tab-pane key="notverify" label="待审核商户">
         <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
       </Tab-pane>
       <Tab-pane key="business" label="商户">
         <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
       </Tab-pane>
     </Tabs>
   </i-col>
+
   <Modal
     :visible.sync="modal"
     :title="modaltitle"
+    closable="false"
+    mask-closable="false"
     ok-text="审核通过"
     cancel-text="审核不通过"
-    @on-ok="ok"
-    @on-cancel="cancel">
+    @on-ok="pass"
+    @on-cancel="showrefuse">
     <p>真实姓名：</p>{{checkitem.realName}}<br />
     <p>商铺地址: </p>{{checkitem.shopLocation?(checkitem.shopLocation.latitude+"|"+checkitem.shopLocation.longitude):""}}<br />
-    <p>对话框内容</p><br />
-    <p>对话框内容</p><br />
-    <p>对话框内容</p><br />
-    <p>对话框内容</p><br />
-    <p>对话框内容</p><br />
+    <div id="allmap" style="height: 50vh;"></div><br />
+    <p>所属市场: </p>{{checkitem.marketid}}<br />
+    <p>摊位正面照片: </p><br />
+    <img :src="checkitem.shopImg" style="width: 100px;" /><br />
+    <p>手持身份证照片: </p><br />
+    <img :src="checkitem.identityImg" style="width: 100px;" /><br />
+  </Modal>
+  <Modal
+      title="拒绝理由"
+      :visible.sync="refusemodal"
+      @on-ok="refuse"
+      class-name="vertical-center-modal">
+      <i-input type="textarea" :value.sync="reason" placeholder="请输入拒绝理由"></i-input>
   </Modal>
 </template>
 <script>
@@ -69,8 +84,13 @@
   export default {
     data () {
       return {
+        pageIndex: 1,
+        pageSize: 10,
+        pageCount: 1,
         tabkey: 'all',
         modal: false,
+        refusemodal: false,
+        reason: '',
         modaltitle: '123',
         checkitem: null,
         key: '',
@@ -148,6 +168,9 @@
             break;
         }
         this.getData();
+      },
+      pageIndex () {
+        this.getData();
       }
     },
     ready() {
@@ -155,17 +178,31 @@
       this.getData();
     },
     methods: {
+      getMap () {
+        window.map = new BMap.Map("allmap");
+        let lon = '116.404';
+        let lat = '39.915';
+        if (this.checkitem.shopLocation&&this.checkitem.longitude > 0 && this.checkitem.latitude > 0) {
+          lon = this.checkitem.longitude;
+          lat = this.checkitem.latitude;
+        }
+        let point = new BMap.Point(lon,lat);
+        map.centerAndZoom(point,12);
+        map.enableScrollWheelZoom();
+      },
       getData () {
         let param = {
           name: this.key,
           status: this.status,
           type: this.type,
-          pagenum: 1,
-          pagesize: 10
+          pagenum: this.pageIndex,
+          pagesize: this.pageSize,
+          paged: 1
         }
         store.getUserList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.users;
+            this.pageCount = msg.totalPage;
             if (this.data.length > 0) {
               this.checkitem = this.data[0];
             }
@@ -208,7 +245,52 @@
       check (index) {
         this.checkitem = this.data[index];
         this.modaltitle = this.data[index].type === 1? "用户信息":"商户信息";
+        this.getMap();
         this.modal = true;
+      },
+      pass () {
+        if (!this.checkitem) {
+          return;
+        }
+        let param = {
+          id: this.checkitem.id,
+          status: true
+        }
+        let _this = this;
+        store.checkUser(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('操作成功!', 1, function () {
+              _this.getData();
+            });
+          } else {
+            this.$Message.error('操作失败!');
+          }
+        });
+      },
+      showrefuse () {
+        if (!this.checkitem) {
+          return;
+        }
+        this.modal = false;
+        this.refusemodal = true;
+        this.reason = "";
+      },
+      refuse () {
+        let param = {
+          id: this.checkitem.id,
+          status: false,
+          reason: this.reason
+        }
+        let _this = this;
+        store.checkUser(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('操作成功!', 1, function () {
+              _this.getData();
+            });
+          } else {
+            this.$Message.error('操作失败!');
+          }
+        });
       }
     }
   }
