@@ -21,6 +21,16 @@ module.exports = {
     }, 'get');
   },
   /**
+  * 删除评论
+  */
+  updateInfoCommentList: function (param, callBack) {
+    API.ajax({
+      api: "info/updatecomment",
+      callBack: callBack,
+      data: param
+    });
+  },
+  /**
   * 删除信息
   */
   delInfo: function (param, callBack) {

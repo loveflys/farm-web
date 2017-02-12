@@ -17,6 +17,9 @@
     .ivu-tooltip-inner{
         max-width: none !important;
     }
+    .ivu-page {
+      margin-top: 20px;
+    }
 </style>
 <template>
   <Row style="margin: 10px 0">

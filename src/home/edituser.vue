@@ -302,8 +302,8 @@
         this.formValidate.lon = e.point.lng;
         this.formValidate.lat = e.point.lat;
         let marker = new BMap.Marker(point);
-        this.getMarket();
         map.addOverlay(marker);
+        this.getMarket();
       },
       setCenter() {
         let temp = map.getCenter();

@@ -223,10 +223,7 @@
       },
       getMap () {
         window.map = new BMap.Map("allmap");
-        let point = null;
-
         if (this.formValidate.location) {
-          console.log("location==>"+this.formValidate.lon+"||"+this.formValidate.lat);
           let point = new BMap.Point(this.formValidate.lon,this.formValidate.lat);
           map.centerAndZoom(point,12);
           map.enableScrollWheelZoom();
