@@ -1,26 +1,3 @@
-<style>
-    .tabs-style > .ivu-tabs-card > .ivu-tabs-content {
-        height: 120px;
-        margin-top: -16px;
-    }
-
-    .tabs-style > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
-        background: #fff;
-        padding: 16px;
-        height: 100vh;
-    }
-
-    .tabs-style > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
-        border-color: transparent;
-    }
-
-    .tabs-style > .ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
-        border-color: #fff;
-    }
-    .ivu-tabs {
-      height: 100vh;
-    }
-</style>
 <template>
   <Row style="margin: 10px 0">
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
@@ -176,6 +153,9 @@
     ready() {
       window.x = this;
       this.getData();
+      this.$nextTick(function () {
+        this.$parent.$root.$data.activekey = "8-1";
+      });
     },
     methods: {
       getMap () {

@@ -136,27 +136,17 @@ export default function (router) {
         require(['./product'], resolve);
       }
     },
-    '/product/add': {
-      component (resolve) {
-        require(['./addpro'], resolve);
-      }
-    },
-    '/product/edit/:id': {
-      component (resolve) {
-        require(['./editpro'], resolve);
-      }
-    },
-    '/recipers/list': {
+    '/recipes/list': {
       component (resolve) {
         require(['./recipes'], resolve);
       }
     },
-    '/recipers/add': {
+    '/recipes/add': {
       component (resolve) {
         require(['./addrecipes'], resolve);
       }
     },
-    '/recipers/edit/:id': {
+    '/recipes/edit/:id': {
       component (resolve) {
         require(['./editrecipes'], resolve);
       }

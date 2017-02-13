@@ -1,26 +1,3 @@
-<style >
-    .top,.bottom{
-        text-align: center;
-    }
-    .center{
-        width: 300px;
-        margin: 10px auto;
-        overflow: hidden;
-        white-space: normal;
-    }
-    .center-left{
-        float: left;
-    }
-    .center-right{
-        float: right;
-    }
-    .ivu-tooltip-inner{
-        max-width: none !important;
-    }
-    .ivu-page {
-      margin-top: 20px;
-    }
-</style>
 <template>
   <Row style="margin: 10px 0">
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
@@ -147,7 +124,6 @@
           {
             title: '操作',
             key: 'action',
-            width: 150,
             align: 'center',
             render (row, column, index) {
               return `<i-button v-if="${row.status===1}" type="success" size="small" @click="settop(${index},${row.isTop?2:1})">${row.isTop?"取消置顶":"置顶"}</i-button><i-button v-if="${row.status===0}" type="success" size="small" @click="check(${index})">审核</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
@@ -218,7 +194,7 @@
       remove (index) {
         let param = {
           id: this.data[index].id,
-
+          deleted: 1
         }
         store.updateBBS(param, (msg)=> {
           if (msg.code === '0') {

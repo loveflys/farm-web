@@ -4,11 +4,24 @@
   <Row style="margin: 10px 0">
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
-    <i-button span="4" type="info">新建</i-button>
+    <i-button span="4" type="info" @click="this.$router.go('/ad/add')">新建</i-button>
   </Row>
-
-
-  <i-table border :content="self" :columns="columns" :data="data"></i-table>
+  <i-col class="tabs-style" style="background: #e3e8ee;padding:16px;height: 100vh;">
+    <Tabs type="card" :active-key.sync="tabkey">
+      <Tab-pane key="all" label="所有">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
+      </Tab-pane>
+      <Tab-pane key="text" label="文字广告">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
+      </Tab-pane>
+      <Tab-pane key="img" label="图片广告">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
+      </Tab-pane>
+    </Tabs>
+  </i-col>
 </template>
 <script>
   import store from '../store/ad.js';
@@ -18,6 +31,11 @@
     data () {
       return {
         key: '',
+        pageIndex: 1,
+        pageSize: 10,
+        pageCount: 1,
+        tabkey: 'all',
+        type: '0', //1-图片 2-文字
         self: this,
         columns: [
           {
@@ -56,10 +74,10 @@
             }
           },
           {
-            title: '推送状态',
+            title: '状态',
             key: 'pushed',
             render (row, column, index) {
-              return `${row.pushed?'已推送':'未推送'}`;
+              return `${row.deleted?"已删除":(row.pushed?'已推送':'未推送')}`;
             }
           },
           {
@@ -73,16 +91,15 @@
             title: '主图',
             key: 'img',
             render (row, column, index) {
-              return `<img src="${row.img}" style="width:100px;height:100px;" />`;
+              return `<img v-if="${row.type==1}" src="${row.img}" style="width:100px;height:100px;" />${row.type==2?"无":""}`;
             }
           },
           {
             title: '操作',
             key: 'action',
-            width: 150,
             align: 'center',
             render (row, column, index) {
-              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button type="error" size="small" @click="remove(${index})">删除</i-button>`;
+              return `<i-button type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button v-if="${!row.deleted&&!row.pushed}" type="success" size="small" @click="push(${index}, 1)">推送</i-button> <i-button v-if="${!row.deleted&&row.pushed}" type="error" size="small" @click="push(${index},2)">取消推送</i-button> <i-button v-if="${!row.deleted}" type="error" size="small" @click="remove(${index})">删除</i-button>`;
             }
           }
         ],
@@ -90,29 +107,80 @@
       }
     },
     watch : {
-      key () {
-        //this.getData();
+      tabkey () {
+        switch(this.tabkey) {
+          case "all":
+            this.type = "0";
+            break;
+          case "img":
+            this.type = "1";
+            break;
+          case "text":
+            this.type = "2";
+            break;
+        }
+        this.getData();
+      },
+      pageIndex () {
+        this.getData();
       }
     },
     ready() {
       window.x = this;
       this.getData();
+      //this.$nextTick(function () {
+      //  this.$parent.$root.$data.activekey = "6-1";
+      //});
     },
     methods: {
       getData () {
         let param = {
           title: this.key,
-          pagenum: 1,
-          pagesize: 10
+          type: this.type,
+          pagenum: this.pageIndex,
+          pagesize: this.pageSize,
+          paged: 1
         }
         store.getAdList(param, (msg)=> {
           if (msg.code === '0') {
             this.data = msg.list;
+            this.pageCount = msg.totalPage;
           } else {
             this.$Message.error('获取广告列表失败!');
           }
         });
-      }
+      },
+      remove (index) {
+        let param = {
+          id: this.data[index].id,
+          deleted: 1
+        }
+        store.updateAd(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('删除广告成功!');
+            this.getData();
+          } else {
+            this.$Message.error('删除广告失败!');
+          }
+        });
+      },
+      push (index, pushed) {
+        let param = {
+          id: this.data[index].id,
+          pushed: pushed
+        }
+        store.updateAd(param, (msg)=> {
+          if (msg.code === '0') {
+            this.$Message.info('推送广告成功!');
+            this.getData();
+          } else {
+            this.$Message.error('推送广告失败!');
+          }
+        });
+      },
+      edit (index) {
+        this.$router.go("/ad/edit/"+this.data[index].id);
+      },
     }
   }
 </script>
