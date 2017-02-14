@@ -105,7 +105,7 @@
       <Form-item label="住址" prop="address">
           <i-input :value.sync="formValidate.address" placeholder="请输入住址"></i-input>
       </Form-item>
-      <Form-item v-show="formValidate.type==2" label="商铺地址" prop="shopLocation">
+      <Form-item v-show="showMap" label="商铺地址" prop="shopLocation">
           <div id="allmap" style="height: 50vh;"></div>
       </Form-item>
       <Form-item v-if="formValidate.type==2" label="所属市场">
@@ -149,6 +149,7 @@
   export default {
     data () {
       return {
+        showMap: true,
         MarketList: [],
         showupload: true,
         showuploadshopImg: true,
@@ -199,13 +200,25 @@
         }
       }
     },
+    watch: {
+      formValidate: {
+        handler (curVal) {
+          if (this.formValidate.type==2) {
+            this.showMap = true;
+          } else {
+            this.showMap = false;
+          }
+        },
+        deep: true
+      }
+    },
     ready() {
       window.x = this;
       this.getData();
       this.getToken();
-      //this.$nextTick(function () {
-      //  this.$parent.$root.$data.activekey = "3-2";
-      //});
+      this.$nextTick(function () {
+        //this.$parent.$root.$data.activekey = "3-2";
+      });
     },
     methods: {
       getData () {
@@ -256,69 +269,57 @@
           }
         });
       },
-      showInfo (e) {
-        let allOverlay = map.getOverlays();
-        for (let item of allOverlay){
-          map.removeOverlay(item);
-        }
-        let point = new BMap.Point(e.point.lng, e.point.lat);
-        this.formValidate.lon = e.point.lng;
-        this.formValidate.lat = e.point.lat;
-        let marker = new BMap.Marker(point);
-        this.formValidate.marketid = "";
-        this.getMarket();
-        map.addOverlay(marker);
-      },
       getMap () {
         window.map = new BMap.Map("allmap");
-        var lon = '116.404';
-        var lat = '39.915';
         if (this.formValidate.shopLocation) {
-          lon = this.formValidate.lon;
-          lat = this.formValidate.lat;
-          var point = new BMap.Point(lon,lat);
-
-          let marker = new BMap.Marker(point);
-
-          map.addOverlay(marker);
-
-          map.centerAndZoom(point,22);
-
+          let point = new BMap.Point(this.formValidate.lon,this.formValidate.lat);
+          map.centerAndZoom(point,18);
+          map.enableScrollWheelZoom();
+          var myCity = new BMap.LocalCity();
+          map.addEventListener("click", this.showInfo);
+          map.addEventListener("tilesloaded",this.setCenter);
         } else {
+          console.log('nolocation');
+          let point = new BMap.Point(116.331398,39.897445);
+          map.centerAndZoom(point,18);
+          map.enableScrollWheelZoom();
           var myCity = new BMap.LocalCity();
           myCity.get(this.myFun);
-          this.setCenter();
+          map.addEventListener("click", this.showInfo);
+          map.addEventListener("tilesloaded",this.setCenter);
         }
-        map.enableScrollWheelZoom();
-        map.addEventListener("click", this.showInfo);
-        map.addEventListener("tilesloaded",this.setCenter);
-      },
-      showInfo (e) {
-        let allOverlay = map.getOverlays();
-        for (let item of allOverlay){
-          map.removeOverlay(item);
-        }
-        let point = new BMap.Point(e.point.lng, e.point.lat);
-        this.formValidate.lon = e.point.lng;
-        this.formValidate.lat = e.point.lat;
-        let marker = new BMap.Marker(point);
-        map.addOverlay(marker);
-        this.getMarket();
+        map.disableDoubleClickZoom()
       },
       setCenter() {
+        map.removeEventListener("tilesloaded",this.setCenter);
         let temp = map.getCenter();
         let point = new BMap.Point(temp.lng,temp.lat);
         this.formValidate.lon = temp.lng;
         this.formValidate.lat = temp.lat;
         let marker = new BMap.Marker(point);
+        let allOverlay = map.getOverlays();
+        for (let item of allOverlay){
+          map.removeOverlay(item);
+        }
         map.addOverlay(marker);
         this.getMarket();
-        map.removeEventListener("tilesloaded", this.setCenter);
       },
       myFun (result) {
         var cityName = result.name;
         map.setCenter(cityName);
         console.log("当前定位城市:"+cityName);
+      },
+      showInfo (e) {
+        let allOverlay = map.getOverlays();
+        let point = new BMap.Point(e.point.lng, e.point.lat);
+        this.formValidate.lon = e.point.lng;
+        this.formValidate.lat = e.point.lat;
+        let marker = new BMap.Marker(point);
+        for (let item of allOverlay){
+          map.removeOverlay(item);
+        }
+        map.addOverlay(marker);
+        this.getMarket();
       },
       getMarket () {
         let _this = this;
@@ -341,18 +342,6 @@
             });
           }
         });
-      },
-      showInfo (e) {
-        let allOverlay = map.getOverlays();
-        for (let item of allOverlay){
-          map.removeOverlay(item);
-        }
-        let point = new BMap.Point(e.point.lng, e.point.lat);
-        this.formValidate.lon = e.point.lng;
-        this.lat = e.point.lat;
-        let marker = new BMap.Marker(point);
-        this.getMarket();
-        map.addOverlay(marker);
       },
       uploadFile (type) {
         let fileInputId = '';

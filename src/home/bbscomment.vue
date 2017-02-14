@@ -89,7 +89,7 @@
             width: 150,
             align: 'center',
             render (row, column, index) {
-              return `<i-button v-if="${!row.deleted}" type="primary" size="small" @click="edit(${index})">编辑</i-button> <i-button v-if="${!row.deleted}" type="error" size="small" @click="remove(${index})">删除</i-button>`;
+              return `<i-button v-if="${!row.deleted}" type="error" size="small" @click="remove(${index})">删除</i-button>`;
             }
           }
         ],

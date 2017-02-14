@@ -9,6 +9,10 @@
         <i-table border :content="self" :columns="columns" :data="data"></i-table>
         <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
       </Tab-pane>
+      <Tab-pane key="top" label="置顶">
+        <i-table border :content="self" :columns="columns" :data="data"></i-table>
+        <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
+      </Tab-pane>
       <Tab-pane key="pass" label="已通过">
         <i-table border :content="self" :columns="columns" :data="data"></i-table>
         <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
@@ -138,12 +142,19 @@
         switch(this.tabkey) {
           case "all":
             this.status = "-1";
+            this.istop = "-1";
+            break;
+          case "top":
+            this.status = "1";
+            this.istop = "1";
             break;
           case "pass":
             this.status = "1";
+            this.istop = "-1";
             break;
           case "notverify":
             this.status = "0";
+            this.istop = "-1";
             break;
         }
         this.getData();
@@ -163,6 +174,7 @@
       getData () {
         let param = {
           title: this.key,
+          istop: this.istop,
           status: this.status,
           pagenum: this.pageIndex,
           pagesize: this.pageSize,

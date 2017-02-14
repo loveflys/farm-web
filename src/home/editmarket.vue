@@ -242,6 +242,7 @@
           map.addEventListener("click", this.showInfo);
           map.addEventListener("tilesloaded",this.setCenter);
         }
+        map.disableDoubleClickZoom()
       },
       setCenter() {
         let temp = map.getCenter();
@@ -250,6 +251,10 @@
         this.formValidate.lon = temp.lng;
         this.formValidate.lat = temp.lat;
         let marker = new BMap.Marker(point);
+        let allOverlay = map.getOverlays();
+        for (let item of allOverlay){
+          map.removeOverlay(item);
+        }
         map.addOverlay(marker);
       },
       myFun (result) {
