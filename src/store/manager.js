@@ -8,7 +8,7 @@ module.exports = {
       api: "manager/list",
       callBack: callBack,
       data: param
-    });
+    }, 'get');
   },
   /**
   * 删除管理员

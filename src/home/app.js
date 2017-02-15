@@ -3,12 +3,14 @@ import VueRouter from 'vue-router';
 import RouterConfig from './router-config';
 import Sortable from 'vue-sortable'
 import iView from 'iview';
+import wangEditor from 'wangeditor';
 import 'iview/dist/styles/iview.css';    // 使用 CSS
 
 
 Vue.use(Sortable)
 Vue.use(VueRouter);
 Vue.use(iView);
+Vue.use(wangEditor);
 /* eslint-disable no-new */
 const router = new VueRouter({});
 RouterConfig(router);

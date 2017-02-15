@@ -1,4 +1,13 @@
 <style>
+        #editor-trigger {
+            height: 400px;
+            /*max-height: 500px;*/
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
 </style>
 <template>
   <Row style="margin: 20px">
@@ -69,8 +78,12 @@
                 </i-col>
             </Row>
       </Form-item>
-      <Form-item v-if="formValidate.responseType==3" label="内容" prop="content">
-          <i-input type="textarea" :value.sync="formValidate.content" placeholder="请输入内容"></i-input>
+      <Form-item label="内容" prop="content">
+          <div id="editor-container" class="container">
+              <textarea id="editor-trigger" :value.sync="formValidate.content" style="display:none;">
+              </textarea>
+          </div>
+          <i-input type="textarea"  placeholder="请输入内容"></i-input>
       </Form-item>
       <Form-item>
             <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
@@ -88,6 +101,7 @@
   export default {
     data () {
       return {
+        showEditor: true,
         showupload: true,
         qiniutoken: '',
         qiniuUrl: '',
@@ -118,6 +132,31 @@
       });
     },
     methods: {
+      getEditor () {
+        var _this = this;
+        let token = this.qiniutoken;
+        var editor = new wangEditor('editor-trigger');
+        window.y = editor;
+        editor.config.uploadImgFileName = 'file';
+        editor.config.uploadImgUrl = config.QINIU_URL;
+        editor.config.uploadHeaders = {
+            'Host' : 'up-z1.qiniu.com'
+        };
+        // 配置自定义参数（举例）
+        editor.config.uploadParams = {
+            token: token
+        };
+
+        editor.config.uploadImgFns.onload = function (resultText, xhr) {
+            let url = _this.qiniuUrl + resultText.key;
+            editor.command(null, 'InsertImage', url);
+        };
+
+        editor.onchange = function () {
+            _this.formValidate.content = this.$txt.html();
+        };
+        editor.create();
+      },
       uploadFile (type) {
         let _this = this;
         let files = document.getElementById("files").files[0];
@@ -169,6 +208,7 @@
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
+            _this.getEditor();
           } else {
             _this.$Notice.warning({
                 title: '提示',
