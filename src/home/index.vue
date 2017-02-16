@@ -1,4 +1,13 @@
 <style >
+    #editor-trigger {
+        height: 400px;
+        /*max-height: 500px;*/
+    }
+    .container {
+        width: 100%;
+        margin: 0 auto;
+        position: relative;
+    }
     .demo-upload-list{
         display: inline-block;
         width: 60px;

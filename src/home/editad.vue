@@ -69,8 +69,11 @@
                 </i-col>
             </Row>
       </Form-item>
-      <Form-item v-if="formValidate.responseType==3" label="内容" prop="content">
-          <i-input type="textarea" :value.sync="formValidate.content" placeholder="请输入内容"></i-input>
+      <Form-item label="内容" prop="content">
+            <div id="editor-container" class="container">
+                <textarea id="editor-trigger" :value.sync="formValidate.content" style="display:none;">
+                </textarea>
+            </div>
       </Form-item>
       <Form-item>
             <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
@@ -113,13 +116,37 @@
     },
     ready() {
       window.x = this;
-      this.getToken();
       this.getData();
       this.$nextTick(function () {
         this.$parent.$root.$data.activekey = "6-2";
       });
     },
     methods: {
+      getEditor () {
+        var _this = this;
+        let token = this.qiniutoken;
+        var editor = new wangEditor('editor-trigger');
+        window.y = editor;
+        editor.config.uploadImgFileName = 'file';
+        editor.config.uploadImgUrl = config.FILE_UPLOAD;
+        editor.config.uploadHeaders = {
+            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
+            'X-USERID' : window.localStorage.getItem("X-USERID")
+        };
+        editor.config.uploadImgFns.onload = function (res, xhr) {
+            let data = JSON.parse(res);
+            if (data.code === '0') {
+              editor.command(null, 'InsertImage', data.url);
+            } else {
+              alert(data.msg);
+            }
+        };
+        editor.onchange = function () {
+            _this.formValidate.content = this.$txt.html();
+        };
+        editor.create();
+        editor.$txt.html(this.formValidate.content)
+      },
       getData () {
         let _this = this;
         let param = {
@@ -127,6 +154,7 @@
         }
         store.getAd(param, (msg)=> {
           if (msg.code === '0') {
+            this.getToken();
             if (msg.ad.type === 1 && msg.ad.img && msg.ad.img.length > 0) {
               this.showupload = false;
             }
@@ -200,6 +228,7 @@
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
+            _this.getEditor();
           } else {
             _this.$Notice.warning({
                 title: '提示',
@@ -229,8 +258,18 @@
       },
       editData () {
         let _this = this;
-        this.formValidate.showStartTime = new Date(this.formValidate.showStartTime).getTime();
-        this.formValidate.showEndTime = new Date(this.formValidate.showEndTime).getTime();
+        if (this.formValidate.showType==2) {
+          if (this.formValidate.showStartTime && this.formValidate.showStartTime !== "") {
+            this.formValidate.showStartTime = new Date(this.formValidate.showStartTime).getTime();
+          } else {
+            this.$Message.error('请选择开始时间!');
+          }
+          if (this.formValidate.showEndTime && this.formValidate.showEndTime !== "") {
+            this.formValidate.showEndTime = new Date(this.formValidate.showEndTime).getTime();
+          } else {
+            this.$Message.error('请选择结束时间!');
+          }
+        }
         store.updateAd(this.formValidate, (msg)=> {
           if (msg.code === '0') {
             this.$Message.success('修改成功!', 1 , function () {

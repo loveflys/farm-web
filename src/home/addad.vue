@@ -1,13 +1,4 @@
 <style>
-        #editor-trigger {
-            height: 400px;
-            /*max-height: 500px;*/
-        }
-        .container {
-            width: 100%;
-            margin: 0 auto;
-            position: relative;
-        }
 </style>
 <template>
   <Row style="margin: 20px">
@@ -83,7 +74,6 @@
               <textarea id="editor-trigger" :value.sync="formValidate.content" style="display:none;">
               </textarea>
           </div>
-          <i-input type="textarea"  placeholder="请输入内容"></i-input>
       </Form-item>
       <Form-item>
             <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
@@ -136,22 +126,20 @@
         var _this = this;
         let token = this.qiniutoken;
         var editor = new wangEditor('editor-trigger');
-        window.y = editor;
         editor.config.uploadImgFileName = 'file';
-        editor.config.uploadImgUrl = config.QINIU_URL;
+        editor.config.uploadImgUrl = config.FILE_UPLOAD;
         editor.config.uploadHeaders = {
-            'Host' : 'up-z1.qiniu.com'
+            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
+            'X-USERID' : window.localStorage.getItem("X-USERID")
         };
-        // 配置自定义参数（举例）
-        editor.config.uploadParams = {
-            token: token
+        editor.config.uploadImgFns.onload = function (res, xhr) {
+            let data = JSON.parse(res);
+            if (data.code === '0') {
+              editor.command(null, 'InsertImage', data.url);
+            } else {
+              alert(data.msg);
+            }
         };
-
-        editor.config.uploadImgFns.onload = function (resultText, xhr) {
-            let url = _this.qiniuUrl + resultText.key;
-            editor.command(null, 'InsertImage', url);
-        };
-
         editor.onchange = function () {
             _this.formValidate.content = this.$txt.html();
         };
@@ -238,8 +226,18 @@
       },
       addData () {
         let _this = this;
-        this.formValidate.showStartTime = new Date(this.formValidate.showStartTime).getTime();
-        this.formValidate.showEndTime = new Date(this.formValidate.showEndTime).getTime();
+        if (this.formValidate.showType==2) {
+          if (this.formValidate.showStartTime && this.formValidate.showStartTime !== "") {
+            this.formValidate.showStartTime = new Date(this.formValidate.showStartTime).getTime();
+          } else {
+            this.$Message.error('请选择开始时间!');
+          }
+          if (this.formValidate.showEndTime && this.formValidate.showEndTime !== "") {
+            this.formValidate.showEndTime = new Date(this.formValidate.showEndTime).getTime();
+          } else {
+            this.$Message.error('请选择结束时间!');
+          }
+        }
         store.addAd(this.formValidate, (msg)=> {
           if (msg.code === '0') {
             this.$Message.success('提交成功!', 1 , function () {

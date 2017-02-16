@@ -46,7 +46,10 @@
             </Radio-group>
       </Form-item>
       <Form-item label="内容" prop="descr">
-          <i-input type="textarea" :value.sync="formValidate.content" placeholder="请填写内容"></i-input>
+            <div id="editor-container" class="container">
+                <textarea id="editor-trigger" :value.sync="formValidate.content" style="display:none;">
+                </textarea>
+            </div>
       </Form-item>
       <Form-item>
             <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
@@ -91,13 +94,36 @@
     },
     ready() {
       window.x = this;
-      this.getToken();
+
       this.getData();
       //this.$nextTick(function () {
       //  this.$parent.$root.$data.activekey = "3-2";
       //});
     },
     methods: {
+      getEditor () {
+        var _this = this;
+        let token = this.qiniutoken;
+        var editor = new wangEditor('editor-trigger');
+        editor.config.uploadImgFileName = 'file';
+        editor.config.uploadImgUrl = config.FILE_UPLOAD;
+        editor.config.uploadHeaders = {
+            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
+            'X-USERID' : window.localStorage.getItem("X-USERID")
+        };
+        editor.config.uploadImgFns.onload = function (res, xhr) {
+            let data = JSON.parse(res);
+            if (data.code === '0') {
+              editor.command(null, 'InsertImage', data.url);
+            } else {
+              alert(data.msg);
+            }
+        };
+        editor.onchange = function () {
+            _this.formValidate.content = this.$txt.html();
+        };
+        editor.create();
+      },
       getData () {
         let _this = this;
         let param = {
@@ -107,6 +133,7 @@
           if (msg.code === '0') {
             this.formValidate = msg.info;
             this.showupload = false;
+            this.getToken();
           } else {
             this.$Message.error('获取分类信息失败!', 1 , function () {
               _this.$router.go('/info/list');
@@ -162,10 +189,10 @@
         let _this = this;
         let param = {};
         userStore.getToken(param, function (data) {
-          console.log(JSON.stringify(data));
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
+            _this.getEditor();
           } else {
             _this.$Notice.warning({
                 title: '提示',
@@ -196,7 +223,6 @@
       editData () {
         let _this = this;
         store.updateInfo(this.formValidate, (msg)=> {
-          console.log(JSON.stringify(msg));
           if (msg.code === '0') {
             this.$Message.success('修改成功!', 1 , function () {
               _this.$router.go('/info/list');
