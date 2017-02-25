@@ -194,6 +194,10 @@
             <Menu-item key="9-1" @click="this.$router.go('/recipes/list')">食谱列表</Menu-item>
             <Menu-item key="9-2" @click="this.$router.go('/recipes/add')">新建食谱</Menu-item>
           </Submenu>
+          <Menu-item key="10-1" @click="this.$router.go('/suggestion/list')">
+            <Icon type="ios-people"></Icon>
+            反馈意见
+          </Menu-item>
         </Menu>
       </i-col>
       <i-col span="20">

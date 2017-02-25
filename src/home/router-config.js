@@ -141,6 +141,11 @@ export default function (router) {
         require(['./recipes'], resolve);
       }
     },
+    '/suggestion/list': {
+      component (resolve) {
+        require(['./suggestion'], resolve);
+      }
+    },
     '/recipes/add': {
       component (resolve) {
         require(['./addrecipes'], resolve);
