@@ -258,19 +258,26 @@
       },
       editData () {
         let _this = this;
+        let param = this.formValidate;
         if (this.formValidate.showType==2) {
           if (this.formValidate.showStartTime && this.formValidate.showStartTime !== "") {
             this.formValidate.showStartTime = new Date(this.formValidate.showStartTime).getTime();
           } else {
             this.$Message.error('请选择开始时间!');
+            return;
           }
           if (this.formValidate.showEndTime && this.formValidate.showEndTime !== "") {
             this.formValidate.showEndTime = new Date(this.formValidate.showEndTime).getTime();
           } else {
             this.$Message.error('请选择结束时间!');
+            return;
           }
+        } else {
+          console.log(JSON.stringify(param));
+          param.showEndTime = 0;
+          param.showStartTime = 0;
         }
-        store.updateAd(this.formValidate, (msg)=> {
+        store.updateAd(param, (msg)=> {
           if (msg.code === '0') {
             this.$Message.success('修改成功!', 1 , function () {
               _this.$router.go('/ad/list');
