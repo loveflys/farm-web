@@ -21,7 +21,7 @@ module.exports = {
     port: 8080,
     proxyTable: {
       '/backend': {
-        target: 'http://jiazi.lol:8282',
+        target: 'http://127.0.0.1:8282',
         changeOrigin: true,
         pathRewrite: {
           '^/backend': ''
