@@ -14,6 +14,7 @@ module.exports = {
     $.ajax({
       url: config.SERVER_URL + options.api,
       beforeSend: function(request) {
+        request.setRequestHeader("HOST", 'http://jiazi.lol:8080');
         request.setRequestHeader("X-USERID", window.localStorage.getItem("X-USERID"));
         request.setRequestHeader("X-TOKEN",  window.localStorage.getItem("X-TOKEN"));
       },
