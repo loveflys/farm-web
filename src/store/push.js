@@ -5,7 +5,7 @@ module.exports = {
   */
   push: function (param, callBack) {
     API.ajax({
-      api: "push",
+      api: "push/send",
       callBack: callBack,
       data: param
     },'get');
