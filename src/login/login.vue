@@ -23,10 +23,10 @@
 <template>
 <div class="login-box">
 <div class="login-logo">
-  <a href="javascript:void(0);"><b>Chenanyi</b>System</a>
+  <a href="javascript:void(0);"><b>黑土菜宝</b>管理系统</a>
 </div>
 <div class="login-box-body">
-  <p class="login-box-msg">come on！傻狍子！</p>
+  <p class="login-box-msg">登录</p>
     <i-form v-ref:form :model="form" :rules="ruleCustom">
       <Form-item prop="username">
           <i-input type="text" :value.sync="form.username"></i-input>

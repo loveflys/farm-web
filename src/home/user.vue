@@ -38,9 +38,9 @@
     @on-ok="pass"
     @on-cancel="showrefuse">
     <p>真实姓名：</p>{{checkitem.realName}}<br />
-    <p>商铺地址: </p>{{checkitem.shopLocation?(checkitem.shopLocation.latitude+"|"+checkitem.shopLocation.longitude):""}}<br />
+    <p>商铺地址: </p>
     <div id="allmap" style="height: 50vh;"></div><br />
-    <p>所属市场: </p>{{checkitem.marketid}}<br />
+    <p>所属市场: </p>{{checkitem.marketName}}<br />
     <p>摊位正面照片: </p><br />
     <img :src="checkitem.shopImg" style="width: 100px;" /><br />
     <p>手持身份证照片: </p><br />
@@ -62,6 +62,8 @@
     data () {
       return {
         pageIndex: 1,
+        startDate: 0,
+        endDate: 0,
         pageSize: 10,
         pageCount: 1,
         tabkey: 'all',
@@ -160,15 +162,40 @@
     methods: {
       getMap () {
         window.map = new BMap.Map("allmap");
-        let lon = '116.404';
-        let lat = '39.915';
-        if (this.checkitem.shopLocation&&this.checkitem.longitude > 0 && this.checkitem.latitude > 0) {
-          lon = this.checkitem.longitude;
-          lat = this.checkitem.latitude;
+        if (this.checkitem.shopLocation) {
+          let point = new BMap.Point(this.checkitem.shopLocation.longitude,this.checkitem.shopLocation.latitude);
+          map.centerAndZoom(point,18);
+          map.enableScrollWheelZoom();
+          var myCity = new BMap.LocalCity();
+          this.setCenter();
+        } else {
+          console.log('nolocation');
+          let point = new BMap.Point(116.331398,39.897445);
+          map.centerAndZoom(point,15);
+          map.enableScrollWheelZoom();
+          var myCity = new BMap.LocalCity();
+          myCity.get(this.myFun);
+          this.setCenter();
         }
-        let point = new BMap.Point(lon,lat);
-        map.centerAndZoom(point,12);
-        map.enableScrollWheelZoom();
+        map.disableDoubleClickZoom()
+      },
+      setCenter() {
+        let temp = map.getCenter();
+        console.log("temp==>"+temp.lng+"||"+temp.lat);
+        let point = new BMap.Point(temp.lng,temp.lat);
+        this.checkitem.shopLocation.longitude = temp.lng;
+        this.checkitem.shopLocation.latitude = temp.lat;
+        let marker = new BMap.Marker(point);
+        let allOverlay = map.getOverlays();
+        for (let item of allOverlay){
+          map.removeOverlay(item);
+        }
+        map.addOverlay(marker);
+      },
+      myFun (result) {
+        var cityName = result.name;
+        map.setCenter(cityName);
+        console.log("当前定位城市:"+cityName);
       },
       getData () {
         let param = {
@@ -177,7 +204,9 @@
           type: this.type,
           pagenum: this.pageIndex,
           pagesize: this.pageSize,
-          paged: 1
+          paged: 1,
+          startDate: this.startDate,
+          endDate: this.endDate
         }
         store.getUserList(param, (msg)=> {
           if (msg.code === '0') {

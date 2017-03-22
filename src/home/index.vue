@@ -93,7 +93,7 @@
           <Menu mode="horizontal" theme="dark">
             <Menu-item>
                 <Icon type="ios-paper"></Icon>
-                没起好名管理后台
+                黑土菜宝管理后台
             </Menu-item>
             <Submenu style="float:right">
                 <template slot="title">

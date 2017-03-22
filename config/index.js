@@ -27,13 +27,6 @@ module.exports = {
           '^/backend': ''
         }
       },
-      // '/upload': {
-      //   target: 'http://up-z1.qiniu.com',
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     '^/upload': ''
-      //   }
-      // }
     }
   }
 };
