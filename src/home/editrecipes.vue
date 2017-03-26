@@ -18,7 +18,7 @@
             <template v-for="item in formValidate.materials">
             <Row>
                 <i-col span="3">
-                    <i-input type="text" :value.sync="item.name" placeholder="请输入材料名称"></i-input>
+                    <Cascader placeholder="请输入材料名称" :data="classes" :value.sync="item.name" :render-format="format"></Cascader>
                 </i-col>
                 <i-col span="1" style="text-align: center">-</i-col>
                 <i-col span="3">
@@ -71,6 +71,7 @@
 </template>
 <script>
   import store from '../store/recipes.js';
+  import classStore from '../store/class.js';
   import userStore from '../store/user.js';
   import config from '../utils/config.js';
   import cookie from '../common/cookie.js';
@@ -78,6 +79,8 @@
     data () {
       return {
         img: '',
+        allClass: [],
+        classes: [],
         showupload: true,
         qiniutoken: '',
         qiniuUrl: '',
@@ -89,7 +92,7 @@
           imgs: [],
           materials: [
             {
-              name: '',
+              name: [],
               dosage: ''
             }
           ],
@@ -104,25 +107,98 @@
     ready() {
       window.x = this;
       this.getToken();
-      this.getData();
+      this.getClass();
       this.$nextTick(function () {
         this.$parent.$root.$data.activekey = "9-2";
       });
     },
     methods: {
+      format (labels, selectedData) {
+        return labels[labels.length - 1];
+      },
+      getClass () {
+        classStore.getClassList({}, (msg)=> {
+          if (msg.code === '0') {
+            let classes = [];
+            this.getData();
+            this.allClass = msg.list;
+            for (let item of msg.list) {
+              if (item.parentId === 0 && item.level === 1) {
+                classes.push({
+                  value: item.code,
+                  label: item.name,
+                  children: []
+                });
+              }
+            }
+
+            for (let item of classes) {
+              for (let i of msg.list) {
+                if (i.parentId === item.value && i.level === 2) {
+                  item.children.push({
+                    value: i.code,
+                    label: i.name,
+                    children: []
+                  })
+                }
+              }
+            }
+
+            for (let item of classes) {
+              for (let it of item.children) {
+                for (let i of msg.list) {
+                  if (i.parentId === it.value && i.level === 3) {
+                    it.children.push({
+                      value: i.code,
+                      label: i.name,
+                    })
+                  }
+                }
+              }
+            }
+
+            this.classes = classes;
+          } else {
+            this.$Message.error('获取分类列表失败!');
+          }
+        });
+      },
       getData () {
         let _this = this;
         let param = {
           id: this.$route.params.id
         }
+        let materials = [];
+
         store.getRecipes(param, (msg)=> {
           if (msg.code === '0') {
+            let materials = [];
+            for (let item of msg.recipes.materials) {
+              let name = [];
+              for (let i of this.allClass) {
+
+                if (i.code == item.id) {
+                  name.unshift(i.code);
+                  for (let temp of this.allClass) {
+                    if (temp.code == i.parentId) {
+                      name.unshift(temp.code);
+                      name.unshift(temp.parentId);
+                    }
+                  }
+                }
+
+              }
+              materials.push({
+                name: name,
+                dosage: item.dosage
+              })
+            }
             this.formValidate = {
               id: msg.recipes.id,
               title: msg.recipes.title,
               method: msg.recipes.method,
               imgs: msg.recipes.imgs,
-              materials: msg.recipes.materials
+              materials: materials
             };
           } else {
             this.$Message.error('获取食谱信息失败!', 1 , function () {
@@ -133,7 +209,7 @@
       },
       addMaterials () {
         this.formValidate.materials.push({
-          name: '',
+          name: [],
           dosage: ''
         })
       },
@@ -221,12 +297,25 @@
       },
       editData () {
         let _this = this;
+        let materials = [];
+        for (let item of this.formValidate.materials) {
+          let temp = item.name.pop();
+          for(let i of this.allClass) {
+            if (temp == i.code) {
+              materials.push({
+                id: i.code,
+                name: i.name,
+                dosage: item.dosage
+              });
+            }
+          }
+        }
         let param = {
           id: this.formValidate.id,
           title: this.formValidate.title,
           method: this.formValidate.method,
           imgs: JSON.stringify(this.formValidate.imgs),
-          materials: JSON.stringify(this.formValidate.materials)
+          materials: JSON.stringify(materials)
         }
         store.updateRecipes(param, (msg)=> {
           if (msg.code === '0') {
