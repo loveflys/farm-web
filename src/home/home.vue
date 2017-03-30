@@ -43,13 +43,13 @@
     methods: {
       test (url, param) {
         store.Test(url, param, (res)=> {
-          
+
         });
       },
       getData () {
         let now = new Date();
         let start = new Date(now.getFullYear()+'/'+(now.getMonth()+1) + '/' + now.getDate()).getTime();
-        let end = new Date(now.getFullYear()+'/'+(now.getMonth()+1) + '/' + (now.getDate()+1)).getTime();
+        let end = (start/1000+86400)*1000;
         let param = {
           pagenum: 1,
           pagesize: 1,
