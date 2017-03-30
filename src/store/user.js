@@ -1,6 +1,16 @@
 import API from 'src/store/api.js';
 module.exports = {
   /**
+  * 测试
+  */
+  Test: function (url, param, callBack) {
+    API.ajax({
+      api: url,
+      callBack: callBack,
+      data: param
+    });
+  },
+  /**
   * 获取七牛云tokjen和url
   */
   getToken: function (param, callBack) {

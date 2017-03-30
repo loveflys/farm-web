@@ -41,6 +41,11 @@
       this.getData();
     },
     methods: {
+      test (url, param) {
+        store.Test(url, param, (res)=> {
+          
+        });
+      },
       getData () {
         let now = new Date();
         let start = new Date(now.getFullYear()+'/'+(now.getMonth()+1) + '/' + now.getDate()).getTime();
