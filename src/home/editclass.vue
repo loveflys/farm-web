@@ -30,7 +30,7 @@
       <Form-item>
             <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
             <i-button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</i-button>
-            <i-button type="ghost" @click="this.$router.go('/address/list')" style="margin-left: 8px">返回</i-button>
+            <i-button type="ghost" @click="this.$router.go('/class/list')" style="margin-left: 8px">返回</i-button>
       </Form-item>
     </i-form>
   </Row>
