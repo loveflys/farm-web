@@ -134,7 +134,7 @@
             }
         };
         editor.onchange = function () {
-            _this.formValidate.content = this.$txt.html();
+            _this.formValidate.method = this.$txt.html();
         };
         editor.create();
       },
