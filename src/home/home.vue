@@ -43,6 +43,8 @@
     data () {
       return {
         totalCount: 0,
+        totalBusinessCount: 0,
+        newBusinessCount: 0,
         newCount: 0
       };
     },

@@ -62,7 +62,7 @@
             title: '权重',
             key: 'weight',
             render (row, column, index) {
-              return `<i-button type="primary" size="small" @click="showChangeWeight(${index})">修改</i-button>`;
+              return `${row.weight}<i-button type="primary" size="small" @click="showChangeWeight(${index})">修改</i-button>`;
             }
           },
           {
