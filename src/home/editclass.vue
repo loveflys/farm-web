@@ -109,7 +109,7 @@
     },
     ready () {
       window.x = this;
-      this.getData();
+      this.getToken();
       this.$nextTick(function () {
         this.$parent.$root.$data.activekey = "2-4";
       });
@@ -181,6 +181,7 @@
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
+            _this.getData();
           } else {
             _this.$Notice.warning({
               title: '提示',
