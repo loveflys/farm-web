@@ -204,6 +204,7 @@
               title: '提示',
               desc: "请先上传分类主图"
             });
+            return;
           }
         }
         store.addClass(this.formValidate, (msg) => {
