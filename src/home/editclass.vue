@@ -75,6 +75,7 @@
         showupload: true,
         qiniutoken: '',
         qiniuUrl: '',
+        visible: false,
         formValidate: {
           nutrition: '',
           descr: '',

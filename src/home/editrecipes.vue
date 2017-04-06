@@ -145,7 +145,6 @@
         classStore.getClassList({}, (msg)=> {
           if (msg.code === '0') {
             let classes = [];
-            this.getData();
             this.allClass = msg.list;
             for (let item of msg.list) {
               if (item.parentId === 0 && item.level === 1) {
@@ -223,6 +222,7 @@
               imgs: msg.recipes.imgs,
               materials: materials
             };
+            this.getEditor();
           } else {
             this.$Message.error('获取食谱信息失败!', 1, function () {
               _this.$router.go('/recipes/list');
@@ -290,7 +290,7 @@
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
-            _this.getEditor();
+            _this.getData();
           } else {
             _this.$Notice.warning({
                 title: '提示',
