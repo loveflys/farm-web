@@ -5,19 +5,25 @@
     <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
   </Row>
-
-
   <i-table border :content="self" :columns="columns" :data="data"></i-table>
   <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
+  <Modal
+    title="修改权重"
+    on-ok="changeWeight"
+    v-model="showWeightChange"
+    class-name="vertical-center-modal">
+    <Input v-model="weight" placeholder="请输入权重"></Input>
+  </Modal>
 </template>
 <script>
   import store from '../store/product.js';
-  import config from '../utils/config.js';
-  import cookie from '../common/cookie.js';
   export default {
     data () {
       return {
         key: '',
+        id: '',
+        showWeightChange: false,
+        weight: 0,
         pageIndex: 1,
         pageSize: 10,
         pageCount: 1,
@@ -54,7 +60,10 @@
           },
           {
             title: '权重',
-            key: 'weight'
+            key: 'weight',
+            render (row, column, index) {
+              return `<i-button type="primary" size="small" @click="showChangeWeight(${index})">修改</i-button>`;
+            }
           },
           {
             title: '所属市场',
@@ -75,14 +84,14 @@
           }
         ],
         data: []
-      }
+      };
     },
-    watch : {
+    watch: {
       pageIndex () {
         this.getData();
       }
     },
-    ready() {
+    ready () {
       window.x = this;
       this.getData();
       this.$nextTick(function () {
@@ -96,8 +105,8 @@
           pagenum: this.pageIndex,
           pagesize: this.pageSize,
           paged: 1
-        }
-        store.getProductList(param, (msg)=> {
+        };
+        store.getProductList(param, (msg) => {
           if (msg.code === '0') {
             this.data = msg.list;
             this.pageCount = msg.totalPage;
@@ -106,13 +115,34 @@
           }
         });
       },
+      showChangeWeight (i) {
+        this.weight = this.data[i].weight;
+        this.id = this.data[i].id;
+        this.showWeightChange = true;
+      },
+      changeWeight () {
+        let param = {
+          id: this.id,
+          weight: this.weight
+        };
+        let _this = this;
+        store.updateProduct(param, (msg) => {
+          if (msg.code === '0') {
+            this.$Message.info('操作成功!', 1, function () {
+              _this.getData();
+            });
+          } else {
+            this.$Message.error('操作失败!');
+          }
+        });
+      },
       update (index) {
         let param = {
           id: this.data[index].id,
-          is_off_shelve: this.data[index].is_off_shelve?'2':'1'
-        }
+          is_off_shelve: this.data[index].is_off_shelve ? '2' : '1'
+        };
         let _this = this;
-        store.updateProduct(param, (msg)=> {
+        store.updateProduct(param, (msg) => {
           if (msg.code === '0') {
             this.$Message.info('操作成功!', 1, function () {
               _this.getData();
@@ -128,14 +158,14 @@
         }
         const date = new Date(value);
         const year = date.getFullYear();
-        let m = date.getMonth()+1;
-        const month = m<10?'0'+m:m;
-        const day = date.getDate()<10?'0'+date.getDate():date.getDate();
-        const Hour = date.getHours()<10?'0'+date.getHours():date.getHours();
-        const Minute = date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes();
-        const Second = date.getSeconds()<10?'0'+date.getSeconds():date.getSeconds();
+        let m = date.getMonth() + 1;
+        const month = m < 10 ? '0' + m : m;
+        const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+        const Hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+        const Minute = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+        const Second = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
         return `${year}-${month}-${day} ${Hour}:${Minute}:${Second}`;
       }
     }
-  }
+  };
 </script>
