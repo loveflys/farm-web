@@ -63,7 +63,6 @@
   import store from '../store/info.js';
   import userStore from '../store/user.js';
   import config from '../utils/config.js';
-  import cookie from '../common/cookie.js';
   export default {
     data () {
       return {
@@ -90,14 +89,11 @@
             { required: true, message: '主图不能为空', trigger: 'blur' }
           ]
         }
-      }
+      };
     },
-    ready() {
+    ready () {
       window.x = this;
       this.getToken();
-      //this.$nextTick(function () {
-      //  this.$parent.$root.$data.activekey = "3-2";
-      //});
     },
     methods: {
       getEditor () {

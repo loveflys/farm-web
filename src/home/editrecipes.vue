@@ -59,7 +59,10 @@
         </Modal>
       </Form-item>
       <Form-item label="做法" prop="method">
-          <i-input type="textarea" :value.sync="formValidate.method" placeholder="请输入做法"></i-input>
+          <div id="editor-container" class="container">
+            <textarea id="editor-trigger" :value.sync="formValidate.method" style="display:none;">
+            </textarea>
+          </div>
       </Form-item>
       <Form-item>
             <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
@@ -74,7 +77,6 @@
   import classStore from '../store/class.js';
   import userStore from '../store/user.js';
   import config from '../utils/config.js';
-  import cookie from '../common/cookie.js';
   export default {
     data () {
       return {
@@ -95,16 +97,16 @@
               name: [],
               dosage: ''
             }
-          ],
+          ]
         },
         ruleValidate: {
           title: [
             { required: true, message: '名字不能为空', trigger: 'blur' }
           ]
         }
-      }
+      };
     },
-    ready() {
+    ready () {
       window.x = this;
       this.getToken();
       this.getClass();
@@ -113,6 +115,29 @@
       });
     },
     methods: {
+      getEditor () {
+        var _this = this;
+        let token = this.qiniutoken;
+        var editor = new wangEditor('editor-trigger');
+        editor.config.uploadImgFileName = 'file';
+        editor.config.uploadImgUrl = config.FILE_UPLOAD;
+        editor.config.uploadHeaders = {
+            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
+            'X-USERID' : window.localStorage.getItem("X-USERID")
+        };
+        editor.config.uploadImgFns.onload = function (res, xhr) {
+            let data = JSON.parse(res);
+            if (data.code === '0') {
+              editor.command(null, 'InsertImage', data.url);
+            } else {
+              alert(data.msg);
+            }
+        };
+        editor.onchange = function () {
+            _this.formValidate.content = this.$txt.html();
+        };
+        editor.create();
+      },
       format (labels, selectedData) {
         return labels[labels.length - 1];
       },
@@ -176,7 +201,6 @@
             for (let item of msg.recipes.materials) {
               let name = [];
               for (let i of this.allClass) {
-
                 if (i.code == item.id) {
                   name.unshift(i.code);
                   for (let temp of this.allClass) {
@@ -186,12 +210,11 @@
                     }
                   }
                 }
-
               }
               materials.push({
                 name: name,
                 dosage: item.dosage
-              })
+              });
             }
             this.formValidate = {
               id: msg.recipes.id,
@@ -201,7 +224,7 @@
               materials: materials
             };
           } else {
-            this.$Message.error('获取食谱信息失败!', 1 , function () {
+            this.$Message.error('获取食谱信息失败!', 1, function () {
               _this.$router.go('/recipes/list');
             });
           }
@@ -215,7 +238,7 @@
       },
       removeMaterials (item) {
         let index = this.formValidate.materials.indexOf(item);
-        this.formValidate.materials.splice(index,1);
+        this.formValidate.materials.splice(index, 1);
       },
       uploadFile (type) {
         let _this = this;
@@ -267,6 +290,7 @@
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
+            _this.getEditor();
           } else {
             _this.$Notice.warning({
                 title: '提示',
