@@ -10,7 +10,7 @@
   <Modal
     title="修改权重"
     on-ok="changeWeight"
-    v-model="showWeightChange"
+    v-if="showWeightChange"
     class-name="vertical-center-modal">
     <Input v-model="weight" placeholder="请输入权重"></Input>
   </Modal>

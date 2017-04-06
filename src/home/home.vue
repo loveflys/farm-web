@@ -42,10 +42,10 @@
   export default {
     data () {
       return {
-        totalCount: 0,
+        totalUserCount: 0,
         totalBusinessCount: 0,
         newBusinessCount: 0,
-        newCount: 0
+        newUserCount: 0
       };
     },
     ready () {
