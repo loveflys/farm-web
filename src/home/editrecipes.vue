@@ -222,7 +222,9 @@
               imgs: msg.recipes.imgs,
               materials: materials
             };
-            this.getEditor();
+            this.$nextTick(function () {
+              _this.getEditor();
+            });            
           } else {
             this.$Message.error('获取食谱信息失败!', 1, function () {
               _this.$router.go('/recipes/list');
