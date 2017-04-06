@@ -99,14 +99,6 @@
             align: 'center'
           },
           {
-            title: '做法',
-            key: 'method',
-            align: 'center',
-            render (row, column, index) {
-              return `<Tooltip placement="top">${row.method.substr(0,10)+(row.method.length>10?"...":"")}<div slot="content"><p>${row.method}</p></div></Tooltip>`;
-            }
-          },
-          {
             title: '图片',
             key: 'mainImg',
             align: 'center',
