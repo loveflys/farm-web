@@ -40,15 +40,7 @@
           <i-input type="textarea" :value.sync="formValidate.descr" placeholder="请输入描述"></i-input>
       </Form-item>
       <Form-item label="所在地区划" prop="locationName">
-        <i-select :model.sync="selectpro" placeholder="请选择省份">
-            <i-option v-for="item in province" :value="item.divisionCode">{{item.name}}</i-option>
-        </i-select>
-        <i-select :model.sync="selectcity" placeholder="请选择市">
-            <i-option v-for="item in city" :value="item.divisionCode">{{item.name}}</i-option>
-        </i-select>
-        <i-select :model.sync="selectdist" placeholder="请选择区/县">
-            <i-option v-for="item in district" :value="item.divisionCode">{{item.name}}</i-option>
-        </i-select>
+        <Cascader placeholder="请输入区划" :data="areas" :value.sync="division" :render-format="format"></Cascader>
       </Form-item>
       <Form-item label="所在地" prop="division">
           <i-input :value.sync="formValidate.locationName" placeholder="请输入所在地"></i-input>
@@ -74,15 +66,11 @@
   export default {
     data () {
       return {
+        areas: [],
+        allAreas: [],
         imgs: [],
         img: '',
-        division: 0,
-        province: [],
-        selectpro: null,
-        city: [],
-        selectcity: null,
-        district: [],
-        selectdist: null,
+        division: [],
         showupload: true,
         qiniutoken: '',
         qiniuUrl: '',
@@ -92,7 +80,7 @@
           lat: null,
           name: '',
           imgs: [],
-          division: '',
+          division: 0,
           id: ''
         },
         ruleValidate: {
@@ -102,91 +90,61 @@
         }
       }
     },
-    watch: {
-      selectpro () {
-        this.division = this.selectpro;
-        this.getDivision(2, this.division);
-        this.city = [];
-        this.district = [];
-      },
-      selectcity () {
-        this.division = this.selectcity;
-        this.getDivision(3, this.division);
-        this.district = [];
-      },
-      selectdist () {
-        this.division = this.selectdist;
-      }
-    },
     ready() {
       window.x = this;
       this.getMap();
       this.getToken();
-      this.getDivision(1, this.division);
+      this.getDivision();
       this.$nextTick(function () {
         this.$parent.$root.$data.activekey = "7-2";
       });
     },
     methods: {
-      getDivisionDetail (id) {
-        let _this = this;
-        let param = {
-          id: id
-        };
-        addressStore.getAddr(param, function (data) {
-          if (data.code === "0") {
-            switch (level) {
-              case 1:
-                _this.selectpro = data.division.divisionCode;
-                _this.getDivision(1, 0);
-                break;
-              case 2:
-                _this.selectcity = data.division.divisionCode;
-                _this.getDivision(2, _this.selectpro);
-                break;
-              case 3:
-                _this.selectdist = data.division.divisionCode;
-                _this.getDivision(3, _this.selectcity);
-                break;
-              default:
-                _this.selectpro = data.division.divisionCode;
-                break;
+      getDivision () {
+        addressStore.getAddrList({}, (msg)=> {
+          if (msg.code === "0") {
+            let areas = [];
+            this.allAreas = msg.list;
+            for (let item of msg.list) {
+              if (item.parentId === 0 && item.level === 1) {
+                areas.push({
+                  value: item.divisionCode,
+                  label: item.name,
+                  children: []
+                });
+              }
             }
-          } else {
-            _this.$Notice.warning({
-                title: '提示',
-                desc: data.msg
-            });
-          }
-        });
-      },
-      getDivision (level) {
-        let _this = this;
-        let param = {
-          level: level,
-          parentId: this.division
-        };
-        addressStore.getAddrList(param, function (data) {
-          console.log(JSON.stringify(data));
-          if (data.code === "0") {
-            switch (level) {
-              case 1:
-                _this.province = data.list;
-                break;
-              case 2:
-                _this.city = data.list;
-                break;
-              case 3:
-                _this.district = data.list;
-                break;
-              default:
-                _this.province = data.list;
-                break;
+
+            for (let item of areas) {
+              for (let i of msg.list) {
+                if (i.parentId === item.value && i.level === 2) {
+                  item.children.push({
+                    value: i.divisionCode,
+                    label: i.name,
+                    children: []
+                  });
+                }
+              }
             }
+
+            for (let item of areas) {
+              for (let it of item.children) {
+                for (let i of msg.list) {
+                  if (i.parentId === it.value && i.level === 3) {
+                    it.children.push({
+                      value: i.divisionCode,
+                      label: i.name
+                    });
+                  }
+                }
+              }
+            }
+
+            this.areas = areas;
           } else {
-            _this.$Notice.warning({
+            this.$Notice.warning({
                 title: '提示',
-                desc: data.msg
+                desc: msg.msg
             });
           }
         });
@@ -308,7 +266,11 @@
       addData () {
         let _this = this;
         this.formValidate.imgs = JSON.stringify(this.imgs);
-        this.formValidate.division = this.division;
+        if (!this.division || this.division.length <= 0) {
+          this.$Message.error('请先选择区划!');
+          return;
+        }
+        this.formValidate.division = this.division[2];
         store.addMarket(this.formValidate, (msg)=> {
           console.log(JSON.stringify(msg));
           if (msg.code === '0') {
