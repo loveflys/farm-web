@@ -16,7 +16,7 @@
           <i-input :value.sync="formValidate.parentId" placeholder="请输入所属分类(一级分类所属分类填0)"></i-input>
       </Form-item>
       <Form-item label="级别" prop="level">
-          <i-select :model.sync="formValidate.level" placeholder="请选择区划等级">
+          <i-select :value.sync="formValidate.level" placeholder="请选择分类等级">
               <i-option value="1">一级分类</i-option>
               <i-option value="2">二级分类</i-option>
               <i-option value="3">三级分类</i-option>
@@ -123,6 +123,10 @@
         store.getClass(param, (msg) => {
           if (msg.code === '0') {
             this.formValidate = msg.result;
+            this.formValidate.level = msg.result.level + '';
+            if (msg.result.mainImg && msg.result.mainImg.length > 0) {
+              this.showupload = false;
+            }
           } else {
             this.$Message.error('获取分类信息失败!', 1, function () {
               _this.$router.go('/class/list');
