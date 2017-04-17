@@ -9,8 +9,9 @@
   <Page :total="pageCount*pageSize" :page-size="pageSize" :current.sync="pageIndex" show-elevator ></Page>
   <Modal
     title="修改权重"
-    on-ok="changeWeight"
-    v-if="showWeightChange"
+    @on-ok="changeWeight"
+    @on-cancel="cancel"
+    :visible.sync="showWeightChange"
     class-name="vertical-center-modal">
     <Input v-model="weight" placeholder="请输入权重"></Input>
   </Modal>
@@ -121,6 +122,7 @@
         this.showWeightChange = true;
       },
       changeWeight () {
+        console.log("ok");
         let param = {
           id: this.id,
           weight: this.weight
@@ -130,11 +132,15 @@
           if (msg.code === '0') {
             this.$Message.info('操作成功!', 1, function () {
               _this.getData();
+              _this.showWeightChange = false;
             });
           } else {
             this.$Message.error('操作失败!');
           }
         });
+      },
+      cancel: function () {
+        this.showWeightChange = false;
       },
       update (index) {
         let param = {
