@@ -129,12 +129,12 @@
           extraValue: this.data[index].id
         }, {
           extraKey: "type",
-          extraValue: "info"
+          extraValue: ""
         }]
         let param = {
           msg: this.data[index].title,
           title: this.data[index].title,
-          msgContent: "测试msgContent",
+          msgContent: "",
           extra: JSON.stringify(extra)
         }
         pushStore.push(param, (msg)=> {
