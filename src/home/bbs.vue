@@ -204,32 +204,67 @@
         return `${year}-${month}-${day} ${Hour}:${Minute}:${Second}`;
       },
       remove (index) {
-        let param = {
-          id: this.data[index].id,
-          deleted: 1
-        }
-        store.updateBBS(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('删除帖子成功!');
-            this.getData();
-          } else {
-            this.$Message.error('删除帖子失败!');
-          }
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否删除该帖子',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: () => {
+              let param = {
+                id: this.data[index].id,
+                deleted: 1
+              }
+              store.updateBBS(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('删除帖子成功!');
+                  this.getData();
+                } else {
+                  this.$Message.error('删除帖子失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
+
       },
       settop (index, istop) {
         let param = {
           id: this.data[index].id,
           istop: istop // 1-设置置顶, 2-取消置顶
         }
-        store.updateBBS(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('操作成功!');
-            this.getData();
-          } else {
-            this.$Message.error('置顶失败!');
-          }
-        });
+
+        if (istop == 1) {
+          store.updateBBS(param, (msg)=> {
+            if (msg.code === '0') {
+              this.$Message.info('操作成功!');
+              this.getData();
+            } else {
+              this.$Message.error('置顶失败!');
+            }
+          });
+        } else {
+          this.$Modal.confirm({
+              title: '提示',
+              content: '是否取消置顶',
+              okText: '取消置顶',
+              cancelText: '关闭',
+              onOk: () => {
+                store.updateBBS(param, (msg)=> {
+                  if (msg.code === '0') {
+                    this.$Message.info('操作成功!');
+                    this.getData();
+                  } else {
+                    this.$Message.error('置顶失败!');
+                  }
+                });
+              },
+              onCancel: () => {
+
+              }
+          });
+        }
       },
       check (index) {
         this.checkitem = this.data[index];

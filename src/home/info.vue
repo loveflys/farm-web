@@ -123,26 +123,37 @@
     },
     methods: {
       push (index) {
-        let _this = this;
-        let extra = [{
-          extraKey: "id",
-          extraValue: this.data[index].id
-        }, {
-          extraKey: "type",
-          extraValue: ""
-        }]
-        let param = {
-          msg: this.data[index].title,
-          title: this.data[index].title,
-          msgContent: "",
-          extra: JSON.stringify(extra)
-        }
-        pushStore.push(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('推送成功!');
-          } else {
-            this.$Message.error('推送失败!');
-          }
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否确认推送该消息',
+            okText: '推送',
+            cancelText: '取消',
+            onOk: () => {
+              let _this = this;
+              let extra = [{
+                extraKey: "id",
+                extraValue: this.data[index].id
+              }, {
+                extraKey: "type",
+                extraValue: ""
+              }]
+              let param = {
+                msg: this.data[index].title,
+                title: this.data[index].title,
+                msgContent: "",
+                extra: JSON.stringify(extra)
+              }
+              pushStore.push(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('推送成功!');
+                } else {
+                  this.$Message.error('推送失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
       },
       getData () {
@@ -216,16 +227,28 @@
         });
       },
       remove (index) {
-        let param = {
-          id: this.data[index].id
-        }
-        store.delInfo(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('删除成功!');
-            this.data.splice(index, 1);
-          } else {
-            this.$Message.error('删除信息失败!');
-          }
+
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否删除该信息',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: () => {
+              let param = {
+                id: this.data[index].id
+              }
+              store.delInfo(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('删除成功!');
+                  this.data.splice(index, 1);
+                } else {
+                  this.$Message.error('删除信息失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
       },
       edit (index) {

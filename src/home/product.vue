@@ -122,7 +122,6 @@
         this.showWeightChange = true;
       },
       changeWeight () {
-        console.log("ok");
         let param = {
           id: this.id,
           weight: this.weight
@@ -148,15 +147,39 @@
           is_off_shelve: this.data[index].is_off_shelve ? '2' : '1'
         };
         let _this = this;
-        store.updateProduct(param, (msg) => {
-          if (msg.code === '0') {
-            this.$Message.info('操作成功!', 1, function () {
-              _this.getData();
-            });
-          } else {
-            this.$Message.error('操作失败!');
-          }
-        });
+
+        if (param.is_off_shelve == 2) {
+          store.updateProduct(param, (msg) => {
+            if (msg.code === '0') {
+              this.$Message.info('操作成功!', 1, function () {
+                _this.getData();
+              });
+            } else {
+              this.$Message.error('操作失败!');
+            }
+          });
+        } else {
+          this.$Modal.confirm({
+              title: '提示',
+              content: '是否下架该商品',
+              okText: '下架',
+              cancelText: '取消',
+              onOk: () => {
+                store.updateProduct(param, (msg) => {
+                  if (msg.code === '0') {
+                    this.$Message.info('操作成功!', 1, function () {
+                      _this.getData();
+                    });
+                  } else {
+                    this.$Message.error('操作失败!');
+                  }
+                });
+              },
+              onCancel: () => {
+
+              }
+          });
+        }
       },
       getTime (value) {
         if (!value) {

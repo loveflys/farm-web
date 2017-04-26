@@ -151,17 +151,28 @@
         });
       },
       remove (index) {
-        let param = {
-          id: this.data[index].id,
-          deleted: 1
-        }
-        store.updateAd(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('删除广告成功!');
-            this.getData();
-          } else {
-            this.$Message.error('删除广告失败!');
-          }
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否删除此条广告',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: () => {
+              let param = {
+                id: this.data[index].id,
+                deleted: 1
+              }
+              store.updateAd(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('删除广告成功!');
+                  this.getData();
+                } else {
+                  this.$Message.error('删除广告失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
       },
       push (index, pushed) {
@@ -169,14 +180,37 @@
           id: this.data[index].id,
           pushed: pushed
         }
-        store.updateAd(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('推送广告成功!');
-            this.getData();
-          } else {
-            this.$Message.error('推送广告失败!');
-          }
-        });
+        if (pushed == 1) {
+          store.updateAd(param, (msg)=> {
+            if (msg.code === '0') {
+              this.$Message.info('推送广告成功!');
+              this.getData();
+            } else {
+              this.$Message.error('推送广告失败!');
+            }
+          });
+        } else {
+          this.$Modal.confirm({
+              title: '提示',
+              content: '是否取消推送',
+              okText: '取消推送',
+              cancelText: '关闭',
+              onOk: () => {
+                store.updateAd(param, (msg)=> {
+                  if (msg.code === '0') {
+                    this.$Message.info('推送广告成功!');
+                    this.getData();
+                  } else {
+                    this.$Message.error('推送广告失败!');
+                  }
+                });
+              },
+              onCancel: () => {
+
+              }
+          });
+        }
+
       },
       edit (index) {
         this.$router.go("/ad/edit/"+this.data[index].id);

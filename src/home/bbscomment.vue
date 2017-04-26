@@ -140,17 +140,28 @@
         return `${year}-${month}-${day} ${Hour}:${Minute}:${Second}`;
       },
       remove (index) {
-        let param = {
-          id: this.data[index].id,
-          deleted: 1
-        }
-        store.updateBBSCommentList(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('删除成功!');
-            this.getData();
-          } else {
-            this.$Message.error('删除分类失败!');
-          }
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否删除该评论',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: () => {
+              let param = {
+                id: this.data[index].id,
+                deleted: 1
+              }
+              store.updateBBSCommentList(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('删除成功!');
+                  this.getData();
+                } else {
+                  this.$Message.error('删除评论失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
       }
     }

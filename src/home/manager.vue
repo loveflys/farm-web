@@ -106,36 +106,70 @@
         });
       },
       remove (index) {
-        let param = {
-          id: this.data[index].id
-        }
-        store.delManager(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('删除成功!');
-            this.data.splice(index, 1);
-          } else {
-            this.$Message.error('删除管理员失败!');
-          }
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否删除该管理员',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: () => {
+              let param = {
+                id: this.data[index].id
+              }
+              store.delManager(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('删除成功!');
+                  this.data.splice(index, 1);
+                } else {
+                  this.$Message.error('删除管理员失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
       },
       edit (index) {
         this.$router.go("/manager/edit/"+this.data[index].id);
       },
       update (index) {
+        let _this = this;
         let param = {
           id: this.data[index].id,
           disabled: this.data[index].disabled===0?'1':'0'
         }
-        let _this = this;
-        store.updateManager(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('操作成功!', 1, function () {
-              _this.getData();
-            });
-          } else {
-            this.$Message.error('操作失败!');
-          }
-        });
+        if (param.disabled == 0) {
+          store.updateManager(param, (msg)=> {
+            if (msg.code === '0') {
+              this.$Message.info('操作成功!', 1, function () {
+                _this.getData();
+              });
+            } else {
+              this.$Message.error('操作失败!');
+            }
+          });
+        } else {
+          this.$Modal.confirm({
+              title: '提示',
+              content: '是否禁用该用户',
+              okText: '禁用',
+              cancelText: '取消',
+              onOk: () => {
+                store.updateManager(param, (msg)=> {
+                  if (msg.code === '0') {
+                    this.$Message.info('操作成功!', 1, function () {
+                      _this.getData();
+                    });
+                  } else {
+                    this.$Message.error('操作失败!');
+                  }
+                });
+              },
+              onCancel: () => {
+
+              }
+          });
+        }
       },
     }
   }

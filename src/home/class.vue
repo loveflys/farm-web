@@ -119,17 +119,29 @@
         });
       },
       remove (index) {
-        let param = {
-          id: this.data[index].id
-        }
-        store.delClass(param, (msg)=> {
-          if (msg.code === '0') {
-            this.$Message.info('删除成功!');
-            this.data.splice(index, 1);
-          } else {
-            this.$Message.error('删除分类失败!');
-          }
+        this.$Modal.confirm({
+            title: '提示',
+            content: '是否删除该分类',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: () => {
+              let param = {
+                id: this.data[index].id
+              }
+              store.delClass(param, (msg)=> {
+                if (msg.code === '0') {
+                  this.$Message.info('删除成功!');
+                  this.data.splice(index, 1);
+                } else {
+                  this.$Message.error('删除分类失败!');
+                }
+              });
+            },
+            onCancel: () => {
+
+            }
         });
+
       },
       edit (index) {
         this.$router.go("/class/edit/"+this.data[index].id);
