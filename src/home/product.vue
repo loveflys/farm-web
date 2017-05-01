@@ -102,7 +102,7 @@
     methods: {
       getData () {
         let param = {
-          title: this.key,
+          proName: this.key,
           pagenum: this.pageIndex,
           pagesize: this.pageSize,
           paged: 1
