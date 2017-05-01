@@ -1,6 +1,6 @@
 <template>
   <Row style="margin: 10px 0">
-    <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
+    <i-input id="search" :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
     <i-button span="4" type="info" @click="this.$router.go('/user/add')">新建</i-button>
   </Row>
@@ -154,9 +154,16 @@
     },
     ready() {
       window.x = this;
+      let _this = this;
       this.getData();
       this.$nextTick(function () {
-        this.$parent.$root.$data.activekey = "8-1";
+        let search = document.getElementById("search");
+        search.onkeypress=function(event){
+          if(event.which == 13) {
+            _this.getData();
+          }
+        };
+        _this.$parent.$root.$data.activekey = "8-1";
       });
     },
     methods: {

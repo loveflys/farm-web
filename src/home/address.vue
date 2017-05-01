@@ -2,7 +2,7 @@
 </style>
 <template>
   <Row style="margin: 10px 0">
-    <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
+    <i-input id="search" :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
     <i-button span="4" type="info" @click="this.$router.go('/address/add')">新建</i-button>
   </Row>
@@ -74,16 +74,22 @@
     },
     ready() {
       window.x = this;
-
-      this.$nextTick(function () {
-        this.$parent.$root.$data.activekey = "3-1";
-      });
+      let _this = this;
       this.getData();
+      this.$nextTick(function () {
+        let search = document.getElementById("search");
+        search.onkeypress=function(event){
+          if(event.which == 13) {
+            _this.getData();
+          }
+        };
+        _this.$parent.$root.$data.activekey = "3-1";
+      });
     },
     methods: {
       getData () {
         let param = {
-          name: this.key,
+          key: this.key,
           pagenum: this.pageIndex,
           pagesize: this.pageSize,
           paged: 1

@@ -1,6 +1,6 @@
 <template>
   <Row style="margin: 10px 0">
-    <i-input :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
+    <i-input id="search" :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
     <i-button span="4" type="info" @click="getData()">搜索</i-button>
   </Row>
   <i-table style="margin:20px 0;" border :content="self" :columns="columns" :data="data"></i-table>
@@ -86,15 +86,22 @@
     },
     ready() {
       window.x = this;
+      let _this = this;
       this.getData();
       this.$nextTick(function () {
-        this.$parent.$root.$data.activekey = "10-1";
+        let search = document.getElementById("search");
+        search.onkeypress=function(event){
+          if(event.which == 13) {
+            _this.getData();
+          }
+        };
+        _this.$parent.$root.$data.activekey = "10-1";
       });
     },
     methods: {
       getData () {
         let param = {
-          userId: this.key,
+          key: this.key,
           pagenum: this.pageIndex,
           pagesize: this.pageSize,
           paged: 1
