@@ -206,7 +206,7 @@
       },
       getData () {
         let param = {
-          name: this.key,
+          key: this.key,
           status: this.status,
           type: this.type,
           pagenum: this.pageIndex,
