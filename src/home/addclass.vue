@@ -6,21 +6,14 @@
       <Form-item label="名称" prop="name">
           <i-input :value.sync="formValidate.name" placeholder="请输入名称"></i-input>
       </Form-item>
-      <Form-item label="分类描述" prop="descr">
-          <i-input type="textarea" :value.sync="formValidate.descr" placeholder="请填写分类描述"></i-input>
+      <Form-item label="分类描述" prop="descr" v-show="formValidate.level == 3">
+          <div id="editor-container" class="container">
+              <textarea id="editor-trigger" :value.sync="formValidate.descr" style="display:none;">
+              </textarea>
+          </div>
       </Form-item>
-      <Form-item label="编号" prop="code">
-          <i-input :value.sync="formValidate.code" placeholder="请输入编号"></i-input>
-      </Form-item>
-      <Form-item v-if="formValidate.level != 1" label="所属分类" prop="parentId">
-          <i-input :value.sync="formValidate.parentId" placeholder="请输入所属分类(一级分类所属分类填0)"></i-input>
-      </Form-item>
-      <Form-item label="级别" prop="level">
-          <i-select :model.sync="formValidate.level" placeholder="请选择区划等级">
-              <i-option value="1">一级分类</i-option>
-              <i-option value="2">二级分类</i-option>
-              <i-option value="3">三级分类</i-option>
-          </i-select>
+      <Form-item label="所属分类" prop="parentId">
+        <Cascader placeholder="请输入所属分类" :data="classes" :value.sync="select" :render-format="format"></Cascader>
       </Form-item>
       <Form-item label="主图" prop="mainImg" v-if="formValidate.level==3">
         <div class="demo-upload-list" v-if="!showupload">
@@ -72,6 +65,9 @@
   export default {
     data () {
       return {
+        select: [],
+        classes: [],
+        allClasses: [],
         showupload: true,
         qiniutoken: '',
         qiniuUrl: '',
@@ -80,9 +76,8 @@
           nutrition: '',
           descr: '',
           name: '',
+          level: 1,
           mainImg: '',
-          code: '',
-          level: '1',
           parentId: ''
         },
         ruleValidate: {
@@ -95,26 +90,78 @@
           name: [
             { required: true, message: '名称不能为空', trigger: 'blur' }
           ],
-          code: [
-            { required: true, message: '编号不能为空', trigger: 'blur' }
-          ],
-          level: [
-            { required: true, message: '级别不能为空', trigger: 'change' }
-          ],
-          parentId: [
-            { required: true, message: '父级不能为空', trigger: 'change' }
-          ]
         }
       };
     },
+    watch: {
+      select: {
+        handler (curVal) {
+          let temp = curVal[curVal.length - 1];
+          if (!temp || temp.length <= 0) {
+            this.formValidate.level = 1;
+            this.parentId = '';
+          } else {
+            for (let item of this.allClasses) {
+              if (item.id == temp) {
+                this.formValidate.level = item.level + 1;
+                this.formValidate.parentId = item.id;
+              }
+            }
+          }
+        },
+        deep: true
+      }
+    },
     ready () {
       window.x = this;
+      this.getAllClasses();
       this.getToken();
       this.$nextTick(function () {
         this.$parent.$root.$data.activekey = "2-3";
       });
     },
     methods: {
+      getAllClasses () {
+        store.getClassList({}, (msg)=> {
+          if (msg.code === "0") {
+            let classes = [{
+              value: "",
+              label: "无",
+              level: 1,
+              children: []
+            }];
+            this.allClasses = msg.list;
+            for (let item of msg.list) {
+              if (item.level == 1) {
+                classes.push({
+                  value: item.id,
+                  label: item.name,
+                  level: 2,
+                  children: []
+                });
+              }
+            }
+            for (let item of classes) {
+              for (let i of msg.list) {
+                if (i.parentId == item.value && i.level == 2) {
+                  item.children.push({
+                    value: i.id,
+                    label: i.name,
+                    level: 3,
+                    children: []
+                  });
+                }
+              }
+            }
+            this.classes = classes;
+          } else {
+            this.$Notice.warning({
+                title: '提示',
+                desc: msg.msg
+            });
+          }
+        });
+      },
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
@@ -124,20 +171,43 @@
           }
         });
       },
+      getEditor () {
+        var _this = this;
+        let token = this.qiniutoken;
+        var editor = new wangEditor('editor-trigger');
+        editor.config.uploadImgFileName = 'file';
+        editor.config.uploadImgUrl = config.FILE_UPLOAD;
+        editor.config.uploadHeaders = {
+            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
+            'X-USERID' : window.localStorage.getItem("X-USERID")
+        };
+        editor.config.uploadImgFns.onload = function (res, xhr) {
+            let data = JSON.parse(res);
+            if (data.code === '0') {
+              editor.command(null, 'InsertImage', data.url);
+            } else {
+              alert(data.msg);
+            }
+        };
+        editor.onchange = function () {
+            _this.formValidate.descr = this.$txt.html();
+        };
+        editor.create();
+      },
       uploadFile (type) {
         let _this = this;
         let files = document.getElementById("files").files[0];
         if (files === null || files === undefined) {
           _this.$Notice.warning({
-            title: '提示',
-            desc: '请先选择文件。'
+              title: '提示',
+              desc: '请先选择文件。'
           });
           return;
         }
-        if (files.size / (1024 * 1024) > 2) {
+        if (files.size/(1024*1024) > 2) {
           _this.$Notice.warning({
-            title: '超出文件大小限制',
-            desc: '文件' + files.name + ' 太大，不能超过 2M。'
+              title: '超出文件大小限制',
+              desc: '文件' + files.name + ' 太大，不能超过 2M。'
           });
           return;
         }
@@ -146,8 +216,8 @@
         oData.append("file", files);
         oData.append("token", this.qiniutoken);
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", config.QINIU_URL, true);
-        oReq.onload = function (oEvent) {
+        oReq.open( "POST", config.QINIU_URL , true );
+        oReq.onload = function(oEvent) {
           let res = JSON.parse(oReq.response);
           if (oReq.status === 200 && res.key) {
             let url = _this.qiniuUrl + res.key;
@@ -155,15 +225,15 @@
             _this.showupload = false;
           } else {
             _this.$Notice.warning({
-              title: '提示',
-              desc: '上传失败。'
+                title: '提示',
+                desc: '上传失败。'
             });
           }
         };
-        oReq.onerror = function (err) {
+        oReq.onerror = function(err) {
           _this.$Notice.warning({
-            title: '提示',
-            desc: '上传错误。'
+              title: '提示',
+              desc: '上传错误。'
           });
         };
         oReq.send(oData);
@@ -175,10 +245,11 @@
           if (data.code === "0") {
             _this.qiniutoken = data.token;
             _this.qiniuUrl = data.url;
+            _this.getEditor();
           } else {
             _this.$Notice.warning({
-              title: '提示',
-              desc: data.msg
+                title: '提示',
+                desc: data.msg
             });
           }
         });
@@ -196,7 +267,7 @@
       addData () {
         let _this = this;
         if (this.formValidate.level == 1) {
-          this.formValidate.parentId = '0';
+          this.formValidate.parentId = '';
         }
         if (this.formValidate.level == 3) {
           if (!this.formValidate.mainImg || this.formValidate.mainImg.length <= 0) {
