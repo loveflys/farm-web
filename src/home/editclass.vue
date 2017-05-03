@@ -13,7 +13,7 @@
           </div>
       </Form-item>
       <Form-item label="所属分类" prop="parentId">
-        <Cascader placeholder="请输入所属分类" :data="classes" :value.sync="select" :render-format="format"></Cascader>
+        <Cascader placeholder="请输入所属分类" :data="classes" change-on-select :value.sync="select" :render-format="format"></Cascader>
       </Form-item>
       <Form-item label="主图" prop="mainImg" v-if="formValidate.level==3">
         <div class="demo-upload-list" v-if="!showupload">
