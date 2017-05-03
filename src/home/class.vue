@@ -46,8 +46,8 @@
         self: this,
         columns: [
           {
-            title: '编号',
-            key: 'code'
+            title: 'id',
+            key: 'id'
           },
           {
             title: '名称',
@@ -63,10 +63,6 @@
           {
             title: '营养价值',
             key: 'nutrition'
-          },
-          {
-            title: 'id',
-            key: 'id'
           },
           {
             title: '等级',
