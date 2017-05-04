@@ -90,9 +90,6 @@
           name: [
             { required: true, message: '名称不能为空', trigger: 'blur' }
           ],
-          code: [
-            { required: true, message: '编号不能为空', trigger: 'blur' }
-          ],
           level: [
             { required: true, message: '级别不能为空', trigger: 'change' }
           ],

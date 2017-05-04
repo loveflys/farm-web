@@ -81,15 +81,9 @@
           parentId: ''
         },
         ruleValidate: {
-          nutrition: [
-            { required: true, message: '营养信息不能为空', trigger: 'blur' }
-          ],
-          descr: [
-            { required: true, message: '描述不能为空', trigger: 'blur' }
-          ],
           name: [
             { required: true, message: '名称不能为空', trigger: 'blur' }
-          ],
+          ]
         }
       };
     },
