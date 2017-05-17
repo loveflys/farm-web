@@ -117,7 +117,6 @@
     },
     ready () {
       window.x = this;
-      this.getData();
       this.getAllClasses();
       this.$nextTick(function () {
         this.$parent.$root.$data.activekey = "2-4";
@@ -147,6 +146,7 @@
       },
       getAllClasses () {
         store.getClassList({}, (msg) => {
+          this.getData();
           if (msg.code === "0") {
             let classes = [{
               value: "",
