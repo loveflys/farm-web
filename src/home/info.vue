@@ -142,7 +142,7 @@
                 extraValue: this.data[index].id
               }, {
                 extraKey: "type",
-                extraValue: ""
+                extraValue: "info"
               }]
               let param = {
                 msg: this.data[index].title,
