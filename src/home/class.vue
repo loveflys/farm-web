@@ -24,7 +24,7 @@
 <template>
   <Row style="margin: 10px 0">
     <i-input id="search" :value.sync="key" placeholder="请输入..." style="width: 300px"></i-input>
-    <i-button span="4" type="info" @click="getData()">搜索</i-button>
+    <i-button span="4" type="info" @click="search()">搜索</i-button>
     <i-button span="4" type="info" @click="this.$router.go('/class/add')">新建</i-button>
   </Row>
 
@@ -34,8 +34,6 @@
 </template>
 <script>
   import store from '../store/class.js';
-  import config from '../utils/config.js';
-  import cookie from '../common/cookie.js';
   export default {
     data () {
       return {
@@ -57,7 +55,7 @@
             title: '描述',
             key: 'descr',
             render (row, column, index) {
-              return `<Tooltip placement="top">${row.descr.substr(0,10)+(row.descr.length>10?"...":"")}<div slot="content"><p>${row.descr}</p></div></Tooltip>`;
+              return `<Tooltip placement="top">${row.descr.substr(0, 10) + (row.descr.length > 10 ? "..." : "")}<div slot="content"><p>${row.descr}</p></div></Tooltip>`;
             }
           },
           {
@@ -83,21 +81,23 @@
           }
         ],
         data: []
-      }
+      };
     },
-    watch : {
+    watch: {
       pageIndex () {
         this.getData();
       }
     },
-    ready() {
+    ready () {
       window.x = this;
       let _this = this;
       this.getData();
       this.$nextTick(function () {
         let search = document.getElementById("search");
-        search.onkeypress=function(event){
-          if(event.which == 13) {
+        search.onkeypress = function (event) {
+          if (event.which === 13) {
+            _this.pageIndex = 1;
+            _this.pageCount = 1;
             _this.getData();
           }
         };
@@ -105,14 +105,19 @@
       });
     },
     methods: {
+      search () {
+        this.pageIndex = 1;
+        this.pageCount = 1;
+        this.getData();
+      },
       getData () {
         let param = {
           name: this.key,
           pagenum: this.pageIndex,
           pagesize: this.pageSize,
           paged: 1
-        }
-        store.getClassList(param, (msg)=> {
+        };
+        store.getClassList(param, (msg) => {
           if (msg.code === '0') {
             this.data = msg.list;
             this.pageCount = msg.totalPage;
@@ -123,32 +128,31 @@
       },
       remove (index) {
         this.$Modal.confirm({
-            title: '提示',
-            content: '是否删除该分类',
-            okText: '删除',
-            cancelText: '取消',
-            onOk: () => {
-              let param = {
-                id: this.data[index].id
+          title: '提示',
+          content: '是否删除该分类',
+          okText: '删除',
+          cancelText: '取消',
+          onOk: () => {
+            let param = {
+              id: this.data[index].id
+            };
+            store.delClass(param, (msg) => {
+              if (msg.code === '0') {
+                this.$Message.info('删除成功!');
+                this.data.splice(index, 1);
+              } else {
+                this.$Message.error('删除分类失败!');
               }
-              store.delClass(param, (msg)=> {
-                if (msg.code === '0') {
-                  this.$Message.info('删除成功!');
-                  this.data.splice(index, 1);
-                } else {
-                  this.$Message.error('删除分类失败!');
-                }
-              });
-            },
-            onCancel: () => {
+            });
+          },
+          onCancel: () => {
 
-            }
+          }
         });
-
       },
       edit (index) {
-        this.$router.go("/class/edit/"+this.data[index].id);
-      },
+        this.$router.go("/class/edit/" + this.data[index].id);
+      }
     }
-  }
+  };
 </script>

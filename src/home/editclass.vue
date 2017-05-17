@@ -84,9 +84,6 @@
           nutrition: [
             { required: true, message: '营养信息不能为空', trigger: 'blur' }
           ],
-          descr: [
-            { required: true, message: '描述不能为空', trigger: 'blur' }
-          ],
           name: [
             { required: true, message: '名称不能为空', trigger: 'blur' }
           ],
@@ -148,7 +145,7 @@
         });
       },
       getAllClasses () {
-        store.getClassList({}, (msg)=> {
+        store.getClassList({}, (msg) => {
           if (msg.code === "0") {
             let classes = [{
               value: "",
@@ -182,8 +179,8 @@
             this.classes = classes;
           } else {
             this.$Notice.warning({
-                title: '提示',
-                desc: msg.msg
+              title: '提示',
+              desc: msg.msg
             });
           }
         });
@@ -204,19 +201,19 @@
         editor.config.uploadImgFileName = 'file';
         editor.config.uploadImgUrl = config.FILE_UPLOAD;
         editor.config.uploadHeaders = {
-            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
-            'X-USERID' : window.localStorage.getItem("X-USERID")
+          'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
+          'X-USERID' : window.localStorage.getItem("X-USERID")
         };
         editor.config.uploadImgFns.onload = function (res, xhr) {
-            let data = JSON.parse(res);
-            if (data.code === '0') {
-              editor.command(null, 'InsertImage', data.url);
-            } else {
-              alert(data.msg);
-            }
+          let data = JSON.parse(res);
+          if (data.code === '0') {
+            editor.command(null, 'InsertImage', data.url);
+          } else {
+            alert(data.msg);
+          }
         };
         editor.onchange = function () {
-            _this.formValidate.descr = this.$txt.html();
+          _this.formValidate.descr = this.$txt.html();
         };
         editor.create();
       },
@@ -225,15 +222,15 @@
         let files = document.getElementById("files").files[0];
         if (files === null || files === undefined) {
           _this.$Notice.warning({
-              title: '提示',
-              desc: '请先选择文件。'
+            title: '提示',
+            desc: '请先选择文件。'
           });
           return;
         }
-        if (files.size/(1024*1024) > 2) {
+        if (files.size / (1024 * 1024) > 2) {
           _this.$Notice.warning({
-              title: '超出文件大小限制',
-              desc: '文件' + files.name + ' 太大，不能超过 2M。'
+            title: '超出文件大小限制',
+            desc: '文件' + files.name + ' 太大，不能超过 2M。'
           });
           return;
         }
@@ -242,8 +239,8 @@
         oData.append("file", files);
         oData.append("token", this.qiniutoken);
         var oReq = new XMLHttpRequest();
-        oReq.open( "POST", config.QINIU_URL , true );
-        oReq.onload = function(oEvent) {
+        oReq.open("POST", config.QINIU_URL, true);
+        oReq.onload = function (oEvent) {
           let res = JSON.parse(oReq.response);
           if (oReq.status === 200 && res.key) {
             let url = _this.qiniuUrl + res.key;
@@ -251,15 +248,15 @@
             _this.showupload = false;
           } else {
             _this.$Notice.warning({
-                title: '提示',
-                desc: '上传失败。'
+              title: '提示',
+              desc: '上传失败。'
             });
           }
         };
-        oReq.onerror = function(err) {
+        oReq.onerror = function (err) {
           _this.$Notice.warning({
-              title: '提示',
-              desc: '上传错误。'
+            title: '提示',
+            desc: '上传错误。'
           });
         };
         oReq.send(oData);
@@ -274,8 +271,8 @@
             _this.getEditor();
           } else {
             _this.$Notice.warning({
-                title: '提示',
-                desc: data.msg
+              title: '提示',
+              desc: data.msg
             });
           }
         });
