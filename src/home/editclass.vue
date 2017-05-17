@@ -133,6 +133,7 @@
           this.getToken();
           if (msg.code === '0') {
             this.formValidate = msg.result;
+            this.select = msg.result.parentId;
             this.formValidate.level = msg.result.level + '';
             if (msg.result.mainImg && msg.result.mainImg.length > 0) {
               this.showupload = false;
