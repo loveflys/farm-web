@@ -1,21 +1,51 @@
 <template>
-  <Row style="margin: 20px">
-    <i-form v-ref:form-validate :model="formValidate" :rules="ruleValidate" :label-width="80">
-      <Form-item label="标题" prop="title">
-          <i-input :value.sync="formValidate.title" placeholder="请输入标题"></i-input>
-      </Form-item>
-      <Form-item label="材料" prop="materials">
-            <Row>
-                <i-col span="3">
-                    <p style="text-align:center;">材料名称</p>
-                </i-col>
-                <i-col span="1" style="text-align: center">-</i-col>
-                <i-col span="3">
-                    <p style="text-align:center;">用料/用量</p>
-                </i-col>
-                <i-col span="1" style="text-align: center"><i-button @click="addMaterials" size="large" type="success" shape="circle" icon="ios-plus-empty"></i-button></i-col>
-            </Row>
-            <template v-for="item in formValidate.materials">
+<Row style="margin: 20px">
+  <i-form v-ref:form-validate :model="formValidate" :rules="ruleValidate" :label-width="80">
+    <Form-item label="标题" prop="title">
+        <i-input :value.sync="formValidate.title" placeholder="请输入标题"></i-input>
+    </Form-item>
+    <Form-item label="描述" prop="descr">
+        <i-input type="textarea" :autosize="{minRows: 2,maxRows: 5}" :value.sync="formValidate.descr" placeholder="请输入描述"></i-input>
+    </Form-item>
+    <Form-item label="主图" prop="step_img" style="margin: 20px 0;">
+      <div class="demo-upload-list" v-if="formValidate.mainImg!=''">
+          <img :src="formValidate.mainImg">
+          <div class="demo-upload-list-cover">
+              <Icon type="ios-eye-outline" @click="handleView(formValidate.mainImg)"></Icon>
+              <Icon type="ios-trash-outline" @click="formValidate.mainImg=''"></Icon>
+          </div>
+      </div>
+      <div v-if="formValidate.mainImg==''" class="weui_uploader_input_wrp" style="
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,.2);">
+          <input style="opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: block;" @change="uploadFile(2)" type="file" accept="image/jpg,image/jpeg,image/png" name="" id="imgfiles" accept="*/*">
+      </div>
+    </Form-item>
+    <Form-item label="材料" prop="materials">
+          <Row>
+              <i-col span="3">
+                  <p style="text-align:center;">材料名称</p>
+              </i-col>
+              <i-col span="1" style="text-align: center">-</i-col>
+              <i-col span="3">
+                  <p style="text-align:center;">用料/用量</p>
+              </i-col>
+              <i-col span="1" style="text-align: center"><i-button @click="addMaterials" size="large" type="success" shape="circle" icon="ios-plus-empty"></i-button></i-col>
+          </Row>
+          <template v-for="item in formValidate.materials">
             <Row>
                 <i-col span="3">
                     <Cascader placeholder="请输入材料名称" :data="classes" :value.sync="item.name" :render-format="format"></Cascader>
@@ -26,51 +56,93 @@
                 </i-col>
                 <i-col span="1" style="text-align: center"><i-button @click="removeMaterials(item)" size="small" type="error" shape="circle" icon="ios-minus-empty"></i-button></i-col>
             </Row>
-            </template>
-        </Form-item>
-      <Form-item label="图片" prop="imgs">
-        <div class="demo-upload-list" v-for="item in formValidate.imgs">
-            <img :src="item">
-            <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" @click="handleView(item)"></Icon>
-                <Icon type="ios-trash-outline" @click="handleRemove(item)"></Icon>
-            </div>
-        </div>
-        <div class="weui_uploader_input_wrp" style="
-          display: inline-block;
-          width: 60px;
-          height: 60px;
-          text-align: center;
-          line-height: 60px;
-          border: 1px solid transparent;
-          border-radius: 4px;
-          overflow: hidden;
-          background: #fff;
-          position: relative;
-          box-shadow: 0 1px 1px rgba(0,0,0,.2);">
-            <input style="opacity: 0;
-              width: 100%;
-              height: 100%;
-              position: relative;
-              display: block;" @change="uploadFile()" type="file" accept="image/jpg,image/jpeg,image/png" name="" id="files" accept="*/*">
-        </div>
-        <Modal title="查看图片" :visible.sync="visible">
-            <img :src="img" v-if="visible" style="width: 100%">
-        </Modal>
-      </Form-item>
-      <Form-item label="做法" prop="method">
-          <div id="editor-container" class="container">
-            <textarea id="editor-trigger" :value.sync="formValidate.method" style="display:none;">
-            </textarea>
+          </template>
+    </Form-item>
+
+    <Form-item label="步骤" prop="steps">
+          <Row>
+              <i-col span="3">
+                  <p style="text-align:center;">添加步骤</p>
+              </i-col>
+              <i-col span="1" style="text-align: center"><i-button @click="addStep" size="large" type="success" shape="circle" icon="ios-plus-empty"></i-button></i-col>
+          </Row>
+          <template v-for="(index,item) in formValidate.steps">
+            <Row style="border:1px solid #e0e0e0;padding:20px;margin-bottom:10px;">
+                <i-col>
+                    <i-input type="text" :value.sync="item.step_title" placeholder="请输入步骤标题"></i-input>
+                </i-col>
+                <Form-item prop="step_img" style="margin: 20px 0;">
+                  <div class="demo-upload-list" v-if="item.step_img!=''">
+                      <img :src="item.step_img">
+                      <div class="demo-upload-list-cover">
+                          <Icon type="ios-eye-outline" @click="handleView(item.step_img)"></Icon>
+                          <Icon type="ios-trash-outline" @click="item.step_img=''"></Icon>
+                      </div>
+                  </div>
+                  <div v-if="item.step_img==''" class="weui_uploader_input_wrp" style="
+                    display: inline-block;
+                    width: 60px;
+                    height: 60px;
+                    text-align: center;
+                    line-height: 60px;
+                    border: 1px solid transparent;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    background: #fff;
+                    position: relative;
+                    box-shadow: 0 1px 1px rgba(0,0,0,.2);">
+                      <input style="opacity: 0;
+                        width: 100%;
+                        height: 100%;
+                        position: relative;
+                        display: block;" @change="uploadFile(1, index)" type="file" accept="image/jpg,image/jpeg,image/png" name="" :id="'files'+index" accept="*/*">
+                  </div>
+                </Form-item>
+                <i-col>
+                    <i-input type="text" :value.sync="item.step_descr" placeholder="请输入详细步骤"></i-input>
+                </i-col>
+                <i-col span="1" style="text-align: center"><i-button @click="removeMaterials(item)" size="small" type="error" shape="circle" icon="ios-minus-empty"></i-button></i-col>
+            </Row>
+          </template>
+    </Form-item>
+
+    <Form-item label="图片" prop="imgs">
+      <div class="demo-upload-list" v-for="item in formValidate.imgs">
+          <img :src="item">
+          <div class="demo-upload-list-cover">
+              <Icon type="ios-eye-outline" @click="handleView(item)"></Icon>
+              <Icon type="ios-trash-outline" @click="handleRemove(item)"></Icon>
           </div>
-      </Form-item>
-      <Form-item>
-            <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
-            <i-button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</i-button>
-            <i-button type="ghost" @click="this.$router.go('/recipes/list')" style="margin-left: 8px">返回</i-button>
-      </Form-item>
-    </i-form>
-  </Row>
+      </div>
+      <div class="weui_uploader_input_wrp" style="
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,.2);">
+          <input style="opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: block;" @change="uploadFile()" type="file" accept="image/jpg,image/jpeg,image/png" name="" id="files" accept="*/*">
+      </div>
+      <Modal title="查看图片" :visible.sync="visible">
+          <img :src="img" v-if="visible" style="width: 100%">
+      </Modal>
+    </Form-item>
+    <Form-item>
+          <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
+          <i-button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</i-button>
+          <i-button type="ghost" @click="this.$router.go('/recipes/list')" style="margin-left: 8px">返回</i-button>
+    </Form-item>
+  </i-form>
+</Row>
 </template>
 <script>
   import store from '../store/recipes.js';
@@ -90,12 +162,20 @@
         formValidate: {
           id: '',
           title: '',
-          method: '',
+          descr: '',
+          mainImg: '',
           imgs: [],
           materials: [
             {
               name: [],
               dosage: ''
+            }
+          ],
+          steps: [
+            {
+              step_title: '',
+              step_img: '',
+              step_descr: ''
             }
           ]
         },
@@ -115,29 +195,6 @@
       });
     },
     methods: {
-      getEditor () {
-        var _this = this;
-        let token = this.qiniutoken;
-        var editor = new wangEditor('editor-trigger');
-        editor.config.uploadImgFileName = 'file';
-        editor.config.uploadImgUrl = config.FILE_UPLOAD;
-        editor.config.uploadHeaders = {
-            'X-TOKEN' : window.localStorage.getItem("X-TOKEN"),
-            'X-USERID' : window.localStorage.getItem("X-USERID")
-        };
-        editor.config.uploadImgFns.onload = function (res, xhr) {
-            let data = JSON.parse(res);
-            if (data.code === '0') {
-              editor.command(null, 'InsertImage', data.url);
-            } else {
-              alert(data.msg);
-            }
-        };
-        editor.onchange = function () {
-            _this.formValidate.method = this.$txt.html();
-        };
-        editor.create();
-      },
       format (labels, selectedData) {
         return labels[labels.length - 1];
       },
@@ -147,9 +204,9 @@
             let classes = [];
             this.allClass = msg.list;
             for (let item of msg.list) {
-              if (item.parentId === 0 && item.level === 1) {
+              if (item.parentId == "" && item.level === 1) {
                 classes.push({
-                  value: item.code,
+                  value: item.id,
                   label: item.name,
                   children: []
                 });
@@ -158,9 +215,9 @@
 
             for (let item of classes) {
               for (let i of msg.list) {
-                if (i.parentId === item.value && i.level === 2) {
+                if (i.parentId == item.value && i.level === 2) {
                   item.children.push({
-                    value: i.code,
+                    value: i.id,
                     label: i.name,
                     children: []
                   })
@@ -171,9 +228,9 @@
             for (let item of classes) {
               for (let it of item.children) {
                 for (let i of msg.list) {
-                  if (i.parentId === it.value && i.level === 3) {
+                  if (i.parentId == it.value && i.level === 3) {
                     it.children.push({
-                      value: i.code,
+                      value: i.id,
                       label: i.name,
                     })
                   }
@@ -200,11 +257,11 @@
             for (let item of msg.recipes.materials) {
               let name = [];
               for (let i of this.allClass) {
-                if (i.code == item.id) {
-                  name.unshift(i.code);
+                if (i.id == item.id) {
+                  name.unshift(i.id);
                   for (let temp of this.allClass) {
-                    if (temp.code == i.parentId) {
-                      name.unshift(temp.code);
+                    if (temp.id == i.parentId) {
+                      name.unshift(temp.id);
                       name.unshift(temp.parentId);
                     }
                   }
@@ -218,13 +275,12 @@
             this.formValidate = {
               id: msg.recipes.id,
               title: msg.recipes.title,
-              method: msg.recipes.method,
+              descr: msg.recipes.descr,
+              mainImg: msg.recipes.mainImg,
+              steps: msg.recipes.steps,
               imgs: msg.recipes.imgs,
               materials: materials
             };
-            this.$nextTick(function () {
-              _this.getEditor();
-            });            
           } else {
             this.$Message.error('获取食谱信息失败!', 1, function () {
               _this.$router.go('/recipes/list');
@@ -238,13 +294,34 @@
           dosage: ''
         })
       },
+      addStep () {
+        this.formValidate.steps.push({
+          step_title: '',
+          step_img: '',
+          step_descr: ''
+        });
+      },
       removeMaterials (item) {
         let index = this.formValidate.materials.indexOf(item);
         this.formValidate.materials.splice(index, 1);
       },
-      uploadFile (type) {
+      removeMaterials (item) {
+        let index = this.formValidate.steps.indexOf(item);
+        this.formValidate.steps.splice(index, 1);
+      },
+      uploadFile (type, index) {
         let _this = this;
-        let files = document.getElementById("files").files[0];
+        let files = null;
+        if (type != '1') {
+          if (type == '2') {
+            files = document.getElementById('imgfiles').files[0];
+          } else {
+            files = document.getElementById("files").files[0];
+          }
+        } else {
+          let name = 'files'+index;
+          files = document.getElementById(name).files[0];
+        }
         if (files === null || files === undefined) {
           _this.$Notice.warning({
               title: '提示',
@@ -269,7 +346,15 @@
           let res = JSON.parse(oReq.response);
           if (oReq.status === 200 && res.key) {
             let url = _this.qiniuUrl + res.key;
-            _this.formValidate.imgs.push(url);
+            if (type != '1') {
+              if (type == '2') {
+                _this.formValidate.mainImg = url;
+              } else {
+                _this.formValidate.imgs.push(url);
+              }
+            } else {
+              _this.formValidate.steps[index].step_img = url;
+            }
           } else {
             _this.$Notice.warning({
                 title: '提示',
@@ -339,9 +424,12 @@
         let param = {
           id: this.formValidate.id,
           title: this.formValidate.title,
+          descr: this.formValidate.descr,
+          mainImg: this.formValidate.mainImg,
           method: this.formValidate.method,
           imgs: JSON.stringify(this.formValidate.imgs),
-          materials: JSON.stringify(materials)
+          materials: JSON.stringify(materials),
+          method: JSON.stringify(this.formValidate.steps)
         }
         store.updateRecipes(param, (msg)=> {
           if (msg.code === '0') {

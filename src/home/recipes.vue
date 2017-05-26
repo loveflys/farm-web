@@ -103,7 +103,7 @@
             key: 'mainImg',
             align: 'center',
             render (row, column, index) {
-              return `<img src="${row.imgs[0]}" style="width:100px;height:100px;" />`;
+              return `<img src="${row.mainImg}" style="width:100px;height:100px;" />`;
             }
           },
           {
