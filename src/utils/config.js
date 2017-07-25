@@ -1,5 +1,5 @@
 module.exports = {
-  'SERVER_URL': 'http://jiazi.lol:8080/backend/api/',
+  'SERVER_URL': 'http://47.92.140.77:8080/backend/api/',
   'ENVELOPE_URL': '',
   'QINIU_URL': 'http://up-z1.qiniu.com/',
   'FILE_UPLOAD': '/backend/api/file/upload',
